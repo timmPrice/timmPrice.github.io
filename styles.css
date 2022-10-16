@@ -6,6 +6,7 @@ body{
 .assignments {
     display:flex;
     padding:10x;
+    margin:10px;
     background:rgb(85, 107, 134)
 }
 
