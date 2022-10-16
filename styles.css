@@ -3,14 +3,14 @@ body{
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.assignment {
+.assignment-details {
     display:flex;
     padding:15px;
     margin:10px;
     background:lightgrey;
 }
 
-.assignment img{
+.assignment-details img{
     width:300px;
     padding:15px;
 }
