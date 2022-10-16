@@ -4,11 +4,17 @@ body{
 }
 
 .assignments {
-    background:red;
+    display:flex;
+    padding:10x;
+    background:rgb(85, 107, 134)
+}
 
+.assignments img{
+    width:200px;
+    padding:10x;
 }
 
 h1{
-    color:rgb(225, 166, 15);
+    color:rgb(239, 118, 32);
     text-align:center;
 }
