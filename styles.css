@@ -1,5 +1,5 @@
 body{
-    background:rgb(141, 172, 226);
+    background:#062326;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -7,15 +7,34 @@ body{
     display:flex;
     padding:10x;
     margin:10px;
-    background:rgb(85, 107, 134)
+    background: #F2F2F2;
+    border-radius: 10px;
+
 }
 
 .assignments img{
     width:200px;
-    padding:10x;
+    padding:25px;
+    margin: 15px;
+    border: 3.5px solid #F2AE72;
+}
+
+.assignments img:hover{
+    border: 3.5px dashed #F27272;
 }
 
 h1{
-    color:rgb(239, 118, 32);
+    color: #F2AE72;
     text-align:center;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 45px;
+}
+
+a {
+    text-decoration:none;
+    color: #F2AE72;
+}
+
+a:hover {
+    color:#F27272;
 }
