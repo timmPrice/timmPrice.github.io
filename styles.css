@@ -3,9 +3,15 @@ body{
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.assignments {
+.stuff {
     display:flex;
-    padding:10x;
+    flex-wrap:wrap;
+    margin: 50px;
+}
+
+.assignments {
+    width:22%;
+    padding:15px;
     margin:10px;
     background: #F2F2F2;
     border-radius: 10px;
@@ -17,6 +23,8 @@ body{
     padding:25px;
     margin: 15px;
     border: 3.5px solid #F2AE72;
+    display:block;
+    margin:auto;
 }
 
 .assignments img:hover{
@@ -26,13 +34,19 @@ body{
 h1{
     color: #F2AE72;
     text-align:center;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    font-size: 45px;
+    font-family: penguin;
+    font-size: 75px;
 }
 
 a {
     text-decoration:none;
     color: #F2AE72;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-align: center;
+}
+p{
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 a:hover {
