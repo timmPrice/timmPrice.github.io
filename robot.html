@@ -17,21 +17,101 @@
         <meta name="author" content="Gamecock Robotics">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>The Robots</title>
+        <link rel="stylesheet" href="styles/general.css">
     </head>
 
     <body>
-        <header>
-            <img src = "assets/ezpzbanner.png" height="95%" width="100%">
-            <nav>
-                <table >
-                    <th><a href = "index.html" alt = "Home"><img src = "assets/High_Quality_Logo.png" width = "50px" height = "50px"></a></th>
-                    <th><a href = "team.html" alt = "Team">Team</a></th>
-                    <th><a href = "robot.html" alt = "robots">Robots</a></th>
-                    <th><a href = "calendar.html" alt = "Calendar">Calendar</a></th>
-                    <th><a href = "joinUs.html" alt = "Join Us">Join us!</a></th>
-                </table>
-            </nav>
-        </header>
+        <div class="banner">
+            <img src="assets/ezpzbanner.png">
+          </div>
+          <div class="title-banner">
+            <div style="display: flex; flex-direction: row; height: 60px;">
+              <img src="assets/uofsc.jpg">
+              South Carolina
+            </div>
+            <div style="height:30px;font-size: 24px; margin-left:10px;">
+            College of Engineering and Computing
+            </div>
+          </div>
+          <div class="navbar" id="navbar">
+            <div class="link">
+                <div class="centered">
+                  <img src="assets/Team Logo.png">
+                </div>
+              </div>
+            <div class="links" style="display: none;" id="spacer"></div>
+            <div class="links" id="links">
+              
+              <div class="link">
+                <div class="centered">
+                  <a href="index.html">About</a>
+                </div>
+              </div>
+              
+              <div class="link">
+                <div class="centered">
+                  <a href="team.html">Team</a>
+                </div>
+              </div>
+              
+              <div class="link">
+                <div class="centered">
+                  <a href="robot.html">Robots</a>
+                </div>
+              </div>
+              
+              <div class="link">
+                <div class="centered">
+                  <a href="calendar.html">Calendar</a>
+                </div>
+              </div>
+              
+              <div class="link">
+                <div class="centered">
+                  <a href="joinUs.html">Join</a>
+                </div>
+              </div>
+
+            </div>
+            <div class="hamburger">
+              <div class="centered">
+              <a href="javascript:void(0);" class="icon" onclick="openDropdown()">
+                <i class="fa fa-bars"></i>
+              </a>
+              </div>
+            </div>
+            <div id="dropdown" class="dropdown">
+              
+                <a href="https://gamecockrobotics.github.io/">About</a>
+              
+                <a href="https://gamecockrobotics.github.io/team.html">Team</a>
+              
+                <a href="https://gamecockrobotics.github.io/robots.html">Retired Robots</a>
+              
+                <a href="https://gamecockrobotics.github.io/sponsors.html">Sponsors</a>
+              
+                <a href="https://gamecockrobotics.github.io/calander.html">Calendar</a>
+            </div>
+          </div>
+        <script>
+          function openDropdown() {
+          var x = document.getElementById("dropdown");
+          if (x.style.display === "flex") {
+            x.style.display = "none";
+            document.getElementById("links").style.display = "flex";
+            document.getElementById("spacer").style.display = "none";
+        
+          } else {
+            x.style.display = "flex";
+            document.getElementById("links").style.display = "none";
+            document.getElementById("spacer").style.display = "flex";
+        
+          }
+        } 
+        </script>
+            <div class="content">
+                <div id="about-page">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira Sans" />
         <main>
             <!-- information labeled as _ will be updated shortly as soon as I have access to proper info. -->
             <div class = "pcata">
@@ -77,12 +157,14 @@
                 </p>
             </div>
         </main>
-        <footer>
-            <h3>Follow our Socials!</h3>
-            <!-- ion-icons more info below in the next comment reguarding the js scripts -->
-            <a href = "https://github.com/GamecockRobotics/TwistedNuts"><ion-icon size = large name = "logo-github"></ion-icon></a>
-            <a href = "https://twitter.com/GamecockRobotix"> <ion-icon size = large name = "logo-twitter"></ion-icon></a>
-            <a href = "https://discord.gg/3QtsUtcK"> <ion-icon size = large name = "logo-discord"></ion-icon></a>
+        <footer>    
+            <div class="footer">
+                <h3>Follow our Socials!</h3>
+                <!-- ion-icons more info below in the next comment reguarding the js scripts-->
+                <p><a href = "https://github.com/GamecockRobotics/TwistedNuts"><ion-icon size = large name = "logo-github"></ion-icon></a>
+                <a href = "https://twitter.com/GamecockRobotix"> <ion-icon size = large name = "logo-twitter"></ion-icon></a>
+                <a href = "https://discord.gg/3QtsUtcK"> <ion-icon size = large name = "logo-discord"></ion-icon></a></p>
+            </div>  
         </footer>
         
         <!--Scripts for IonIcons - javascrript library that allows easy use of popular icons - https://ionic.io/ionicons""-->
