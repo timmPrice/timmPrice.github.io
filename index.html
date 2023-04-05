@@ -20,6 +20,28 @@
         <link rel="stylesheet" href="styles/general.css">
     </head>
 
+    <style>
+      main{
+        padding: 5%;
+        display: flex;
+        column-count: 2;
+        column-gap: 3%;
+      }
+      .leftdiv{
+        width: 45%    
+      }
+      .rightdiv{
+        width: 45%;
+        padding-left: 5%;
+      }
+      #qr{
+        padding-left: 25%;
+      }
+      #yt{
+        text-align:center;
+  		  width:100%;
+      }
+    </style>
 
     <body>
         <div class="banner">
@@ -72,67 +94,31 @@
                   <a href="joinUs.html">Join</a>
                 </div>
               </div>
-
-            </div>
-            <div class="hamburger">
-              <div class="centered">
-              <a href="javascript:void(0);" class="icon" onclick="openDropdown()">
-                <i class="fa fa-bars"></i>
-              </a>
-              </div>
-            </div>
-            <div id="dropdown" class="dropdown">
-              
-                <a href="https://gamecockrobotics.github.io/">About</a>
-              
-                <a href="https://gamecockrobotics.github.io/team.html">Team</a>
-              
-                <a href="https://gamecockrobotics.github.io/robots.html">Retired Robots</a>
-              
-                <a href="https://gamecockrobotics.github.io/sponsors.html">Sponsors</a>
-              
-                <a href="https://gamecockrobotics.github.io/calander.html">Calendar</a>
             </div>
           </div>
-        <script>
-          function openDropdown() {
-          var x = document.getElementById("dropdown");
-          if (x.style.display === "flex") {
-            x.style.display = "none";
-            document.getElementById("links").style.display = "flex";
-            document.getElementById("spacer").style.display = "none";
-        
-          } else {
-            x.style.display = "flex";
-            document.getElementById("links").style.display = "none";
-            document.getElementById("spacer").style.display = "flex";
-        
-          }
-        } 
-        </script>
-            <div class="content">
-                <div id="about-page">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira Sans" />
-        
+      
         <main>
+          <div class = "leftdiv">
             <div class = "youtube">  
-                <h1>VEX Robotics: Spin Up</h1>
-                <p> Vex is a head to head competition where teams compete with two robots to score more points than the other team. Teams design, build, program and drive the robots. Each year a different challenge is presented.</p>
-                <p>Gamecock Robotics was founded in 2021 as the robotics team for the University of South Carolina. The team has 11 members and 1 faculty advisor. </p>
-                <!-- youtube embeded video done through share feature -->
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/wIZgvVDZc2Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+              <h1 style = "text-align: center;">VEX Robotics: Spin Up</h1>
+              <p> Vex is a head to head competition where teams compete with two robots to score more points than the other team. Teams design, build, program and drive the robots. Each year a different challenge is presented.</p>
+              <p>Gamecock Robotics was founded in 2021 as the robotics team for the University of South Carolina. The team has 11 members and 1 faculty advisor. </p>
+              <!-- youtube embeded video done through share feature -->
+              <iframe id = "yt" width="560" height="315" src="https://www.youtube.com/embed/wIZgvVDZc2Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
             <div class = "discord">
-                <h1>Join our Discord!</h1>
-                <p>If you are interested in learning more about our club, joining our club, or just joining a community of people passionate about robotics, join our discord. Our discord has all of our important announcements, meeting times and discussions about robot designs.</p>
-                <img src = "assets/discord-qrcode.png" height = "300px" width = "300px">
-                <p></p>
+              <h1 style="text-align: center;">Join our Discord!</h1>
+              <p>If you are interested in learning more about our club, joining our club, or just joining a community of people passionate about robotics, join our discord. Our discord has all of our important announcements, meeting times and discussions about robot designs.</p>
+              <img id = "qr" src = "assets/discord-qrcode.png" height = "300px" width = "300px">
             </div>
+          </div>
+          <div class = "rightdiv">
             <div classs = "twitter">
-                <!-- definately not covered in class but I used a website made by twitter "https://publish.twitter.com" to help me create this js script to embed twitter, since it is important content I decieded to include it now -->
-                <a class="twitter-timeline" data-lang="en" data-width="750" data-height="1270" data-theme="light" href="https://twitter.com/GamecockRobotix?ref_src=twsrc%5Etfw">Tweets by GamecockRobotix</a> 
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+              <!-- definately not covered in class but I used a website made by twitter "https://publish.twitter.com" to help me create this js script to embed twitter, since it is important content I decieded to include it now -->
+              <a class="twitter-timeline" data-lang="en" data-width="100%" data-height="1100" data-theme="light" href="https://twitter.com/GamecockRobotix?ref_src=twsrc%5Etfw">Tweets by GamecockRobotix</a> 
+              <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
             </div>
+          </div>
         </main>
         <footer>    
             <div class="footer">
