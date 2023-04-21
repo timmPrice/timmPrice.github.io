@@ -17,31 +17,98 @@
         <meta name="author" content="Gamecock Robotics">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Gamecock Robotics</title>
+        <link rel="icon" type="image/x-icon" href="assets/Team Logo.png">
         <link rel="stylesheet" href="styles/general.css">
+        
     </head>
 
     <style>
-      main{
-        padding: 5%;
-        display: flex;
-        column-count: 2;
-        column-gap: 3%;
+      .about-content {
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
       }
-      .leftdiv{
-        width: 45%    
+      main {
+          padding-top: 20px;
       }
-      .rightdiv{
-        width: 45%;
-        padding-left: 5%;
+      .main p, .main h1, .main h2, .main h3 {
+          color: #000000;
       }
-      #qr{
-        padding-left: 25%;
+      .sidebar {
+          width: 75%;
+          display: block;
+          z-index: -1;
       }
-      #yt{
-        text-align:center;
-  		  width:100%;
+      .sticky {
+          position: sticky;
+          top: 85px;
       }
-    </style>
+      .row {
+          display: flex;
+          flex-direction: row;
+      }
+      .row .text {
+          width: 100%;
+          margin: 20px;
+          font-family: fira sans;
+      }
+      .row .video {
+          width: 50%;
+          min-width: 240px;
+          margin-top: 100px;
+          padding-left: 30px;
+      }
+      .twitter {
+          padding-bottom: 40px;
+      }
+      .discord {
+          text-align:center;
+          align-items: center;
+      }
+  
+      .container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          width: 100%;
+          max-width: 1500px;
+          margin: 0 15px;
+          overflow: hidden;
+          flex-direction: row;
+          padding-bottom: 50px;
+      }            
+      .left-div{
+          width: 48%;
+          overflow: auto;
+          padding: 10px;
+      }
+      .right-div{
+          width: 48%;
+          overflow: auto;
+          padding: 10px;
+      }
+      .responsive {
+          max-width: 60%;
+          height: auto;
+          align-items: center;
+          justify-content: center;
+    }
+    .iframe-container{
+      aspect-ratio: 16 / 9;
+      width: 100%;
+    }   
+  @media (max-width: 1000px) {
+      .left-div, .right-div {
+          width: 100%;
+          height: auto;
+          margin: 10px 0;
+      }
+
+      .discord img{
+        padding: -25%;
+      }
+  }
+  </style>
 
     <body>
         <div class="banner">
@@ -88,37 +155,33 @@
                   <a href="calendar.html">Calendar</a>
                 </div>
               </div>
-              
-              <div class="link">
-                <div class="centered">
-                  <a href="joinUs.html">Join</a>
-                </div>
-              </div>
             </div>
           </div>
       
         <main>
-          <div class = "leftdiv">
-            <div class = "youtube">  
-              <h1 style = "text-align: center;">VEX Robotics: Spin Up</h1>
-              <p> Vex is a head to head competition where teams compete with two robots to score more points than the other team. Teams design, build, program and drive the robots. Each year a different challenge is presented.</p>
-              <p>Gamecock Robotics was founded in 2021 as the robotics team for the University of South Carolina. The team has 11 members and 1 faculty advisor. </p>
-              <!-- youtube embeded video done through share feature -->
-              <iframe id = "yt" width="560" height="400" src="https://www.youtube.com/embed/wIZgvVDZc2Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          <div class="container">
+            <div class="left-div">
+              <h1 style="text-align: center">VEX Robotics: Spin Up</h1>
+                <p>
+                  Vex is a head to head competition where teams compete with two robots to score more points than the other team. Teams design, build, program and drive the robots. Each year a different challenge is presented.
+                </p>
+                <p>
+                  Gamecock Robotics was founded in 2021 as the robotics team for the University of South Carolina. The team has 11 members and 1 faculty advisor.
+                </p> 
+                <div class="iframe-container">
+                  <iframe width="680" height="383" src="https://www.youtube.com/embed/wIZgvVDZc2Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="true"></iframe>
+                </div>
+                <div class = discord> 
+                  <h1 style="text-align: center">Join Our Discord!</h1>
+                  <p>If you are interested in learning more about our club, joining our club, or just joining a community of people passionate about robotics, join our discord. Our discord has all of our important announcements, meeting times and discussions about robot designs.</p>
+                  <img src="assets/discord-qrcode.png" alt="discord" class="responsive">
+                </div>
+              </div>
+              <div class="right-div">
+                <a class="twitter-timeline" data-lang="en" data-width="750" data-height="1270" data-theme="light" href="https://twitter.com/GamecockRobotix?ref_src=twsrc%5Etfw">Tweets by GamecockRobotix</a> 
+                <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+              </div>
             </div>
-            <div class = "discord">
-              <h1 style="text-align: center;">Join our Discord!</h1>
-              <p>If you are interested in learning more about our club, joining our club, or just joining a community of people passionate about robotics, join our discord. Our discord has all of our important announcements, meeting times and discussions about robot designs.</p>
-              <img id = "qr" src = "assets/discord-qrcode.png" height = "300px" width = "300px">
-            </div>
-          </div>
-          <div class = "rightdiv">
-            <div classs = "twitter">
-              <!-- definately not covered in class but I used a website made by twitter "https://publish.twitter.com" to help me create this js script to embed twitter, since it is important content I decieded to include it now -->
-              <a class="twitter-timeline" data-lang="en" data-width="100%" data-height="1100" data-theme="light" href="https://twitter.com/GamecockRobotix?ref_src=twsrc%5Etfw">Tweets by GamecockRobotix</a> 
-              <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
-            </div>
-          </div>
         </main>
         <footer>    
             <div class="footer">
