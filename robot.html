@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.js" integrity="sha512-Cv3WnEz5uGwmTnA48999hgbYV1ImGjsDWyYQakowKw+skDXEYYSU+rlm9tTflyXc8DbbKamcLFF80Cf89f+vOQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YCQ7JJH9CF"></script>
         <script>
@@ -17,6 +18,7 @@
         <meta name="author" content="Gamecock Robotics">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>The Robots</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link rel="icon" type="image/x-icon" href="assets/Team Logo.png">
         <link rel="stylesheet" href="styles/general.css">
     </head>
@@ -70,30 +72,183 @@
       </div>
             
       <style>
+
         #title{
           font-size: 48px;
           text-align: center;
         }
+
+        .bots{
+          align-items: center;
+          justify-content: center;
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .performance{
+          display: flex;
+          flex-wrap: wrap;
+          margin-left: 10%;
+          margin-bottom: 7%;
+          margin-top: 2%;
+        }
+
+      .tiger {
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+        
+      }
+      .khalahari{
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+      }
+      .purdue{
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+      }
+
       </style>
 
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira Sans" />
         <main>
           <h1 id = "title">Current Robots</h1>
-          
-          <div class = "red">
-            <img src = "assets/red.PNG" alt = "red robot" width =" 500px">
-            <h3>performance</h3>
-            <div id = "chart-container"></div>
-            
-            <script src = "https://d3js.org/d3.v7.min.js"></script>
-            <script src = "scriptstart.js"></script>
-
+          <div class = "row">
+            <div class = "column">
+              <div class = "bots">
+                <img src = "assets/blue.PNG" width = "550px" alt = "blue bot">
+                <img src = "assets/red.PNG" width = "550px" alt = "red bot">
+              </div>
+            </div>
+            <div class = "performance">
+              <div class = "khalahari">
+                <h1>khalahari</h1>
+                <div style ="">
+                  <canvas id="khalahari"></canvas>
+                  </div>
+                  <script>
+                    var ctx = document.getElementById('khalahari').getContext('2d');
+                    var khalahari = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                          labels: ['Q1', 'Q10', 'Q13', 'Q19', 'Q25', 'Q31', 'Q38', 'Q47', 'E16', 'QF'],
+                          datasets: [{
+                              label: 'Our Scores',
+                              data: [63, 46, 81, 63, 48, 53, 15, 88, 58, 48],
+                              borderColor: 'green',
+                              borderWidth: 1,
+                              tension: 0.1
+                          }, {
+                              label: 'Opponet Scores',
+                              data: [57, 154, 81, 42, 57, 69, 117, 70, 38, 107],
+                              borderColor: 'red',
+                              borderWidth: 1,
+                              tension: 0.1
+                          }, {
+                              label: 'Skills Score',
+                              data: [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25],
+                              borderColor: 'blue',
+                              borderWidth: 1,
+                              tension: 0.1
+                          }]        
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                  </script>
+                </div>
+              <div class = "tiger">
+                <h1>Tiger Takedown</h1>
+                <div style = "">
+                  <canvas id="tiger"></canvas>
+                  </div>
+                  <script>
+                    var ctx = document.getElementById('tiger').getContext('2d');
+                    var tiger = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                          labels: ['Q1', 'Q8', 'Q17', 'Q29', 'Q36', 'Q45', 'Q50', 'E16', 'QF', 'SF', 'F1', 'F2'],
+                          datasets: [{
+                              label: 'Our Scores',
+                              data: [120, 120, 98, 31, 55, 40, 93, 111, 84, 94, 25, 47],
+                              borderColor: 'green',
+                              borderWidth: 1,
+                              tension: 0.1
+                          }, {
+                              label: 'Opponet Scores',
+                              data: [35, 9, 98, 31, 55, 58, 93, 51, 78, 94, 139, 183],
+                              borderColor: 'red',
+                              borderWidth: 1,
+                              tension: 0.1
+                          }, {
+                              label: 'Skills Score',
+                              data: [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25],
+                              borderColor: 'blue',
+                              borderWidth: 1,
+                              tension: 0.1
+                          }]        
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                  </script>
+                </div>
+                <div class = "purdue">
+                  <h1>Purdue SIGbots</h1>
+                  <div style = "">
+                    <canvas id="purdue"></canvas>
+                    </div>
+                    <script>
+                      var ctx = document.getElementById('purdue').getContext('2d');
+                      var purdue = new Chart(ctx, {
+                          type: 'line',
+                          data: {
+                            labels: ['Q2', 'Q12', 'Q23', 'Q34', 'Q50', 'Q62', 'Q74', 'E16'],
+                            datasets: [{
+                                label: 'Our Scores',
+                                data: [140, 62, 113, 147, 127, 123, 188, 0],
+                                borderColor: 'green',
+                                borderWidth: 1,
+                                tension: 0.1
+                            }, {
+                                label: 'Opponet Scores',
+                                data: [122, 160, 105, 34, 160, 151, 14, 181],
+                                borderColor: 'red',
+                                borderWidth: 1,
+                                tension: 0.1
+                            }, {
+                                label: 'Skills Score',
+                                data: [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25],
+                                borderColor: 'blue',
+                                borderWidth: 1,
+                                tension: 0.1
+                            }]        
+                          },
+                          options: {
+                              scales: {
+                                  y: {
+                                      beginAtZero: true
+                                  }
+                              }
+                          }
+                      });
+                    </script>
+                  </div>
+                  
+              </div>
+            </div>
           </div>
-          <div class = "blue">
-            <img src = "assets/blue.PNG" alt = "blue robot" width = "500px">
-            <h3>performance</h3>
-          </div>
-
         </main>
         <footer>    
             <div class="footer">
