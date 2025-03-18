@@ -1,16 +1,4 @@
 /* input.css */
-
-/* Tailwind's base styles */
-@tailwind base;
-
-/* Tailwind's components */
-@tailwind components;
-
-/* Tailwind's utilities */
-@tailwind utilities;
-
-/* Your custom styles */
-
 @font-face {
     font-family: "Iosevka";
     src: url("../fonts/IosevkaTermNerdFont-Regular.ttf") format("truetype");
