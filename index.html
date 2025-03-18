@@ -4,21 +4,18 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
-        <link href="css/style.css" rel="stylesheet">
+        <link href="src/output.css" rel="stylesheet">
     </head>
-    <body>
-        <nav>
-            <a href="https://www.github.com/timmPrice">github ↗</a>
-        </nav>
-        
-            <div class="terminal">
-                <span id="text"></span><span class="cursor">█</span>
+    <body class="bg-black text-white">
+        <main>
+            <div class="flex flex-col items-center">
+                <a href="https://www.github.com/timmPrice" class="text-amber-400 hover:text-lime-600 underline mb-10 mt-35" target="_blank"> résumé ↗</a>
+                <div class="terminal text-5xl" >
+                    <span id="text"></span><span class="cursor">█</span>
+                </div>
+                <p class="text-lg">under contruction</p>
             </div>
-            
-            <div class="text">
-                <p>under contruction</p>      
-            </div>
-
-        <script src="scripts/term.js"></script>
+            <script src="src/term.js"></script>
+        </main>
     </body>
 </html>

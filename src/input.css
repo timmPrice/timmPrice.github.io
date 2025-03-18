@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Iosevka";
+    src: url("../fonts/IosevkaTermNerdFont-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+main {
+    font-family: "Iosevka";
+}
+
+.cursor {
+    /*display: inline-block;*/
+    animation: blink 1.5s step-end infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
