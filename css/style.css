@@ -1509,14 +1509,22 @@ body {
   background-color: #000000;
   flex-direction: column;
 }
-body h1 {
-  font-family: "Iosevka", sans-serif;
-}
 body a {
   font-family: "Iosevka", sans-serif;
+  color: #FABD2F;
+}
+body a:visited, a:active {
+  color: #FABD2F;
+}
+body a:hover {
+  color: #BABB26;
+}
+.text {
+  font-family: "Iosevka", sans-serif;
+  font-size: 16pt;
 }
 .terminal {
-  font-size: 24px;
+  font-size: 36pt;
   font-family: "Iosevka", sans-serif;
   white-space: nowrap;
 }
