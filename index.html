@@ -6,14 +6,23 @@
         <title></title>
         <link href="src/output.css" rel="stylesheet">
     </head>
-    <body class="bg-black text-white">
+    <body class="bg-black  bg-cover bg-center text-white">
         <main>
             <div class="flex flex-col items-center">
-                <a href="https://www.github.com/timmPrice" class="text-amber-400 hover:text-lime-600 underline mb-10 mt-35" target="_blank"> résumé ↗</a>
-                <div class="terminal text-5xl" >
+                <a href="https://www.github.com/timmPrice" class="text-orange-600 hover:text-lime-600 underline mb-2 mt-35 text-lg" target="_blank"> résumé ↗</a>
+                <div class="terminal text-6xl" >
                     <span id="text"></span><span class="cursor">█</span>
                 </div>
-                <p class="text-lg">under contruction</p>
+            </div>
+            <div class="containers flex flex-wrap justify-center gap-8 sm:gap-20 mt-75" >
+                <div class="w-1/5 border border-orange-600 p-4 sm:p-8 rounded-lg h-45 hover:border-lime-600 hover:text-lime-600 overflow-auto text-ellipsis ">
+                   <p class="pb-4 text-lg">blog  ~</p> 
+                   <p class="text-neutral-300">Imperfect logs of what I have been working on. Updated semi-regularly to document my projects</p> 
+                </div>
+                <div class="w-1/5 border border-orange-600 p-4 sm:p-8 rounded-lg h-45 hover:border-lime-600 hover:text-lime-600 overflow-auto text-ellipsis"">
+                   <p class="pb-4 text-lg">projects  ~</p>
+                   <p class="text-neutral-300">A somewhat comprehensive collection of the projects I have been working on</p>
+                </div>
             </div>
             <script src="src/term.js"></script>
         </main>

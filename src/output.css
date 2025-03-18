@@ -7,19 +7,20 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-500: oklch(0.637 0.237 25.331);
+    --color-red-700: oklch(0.505 0.213 27.518);
+    --color-orange-600: oklch(0.646 0.222 41.116);
+    --color-orange-700: oklch(0.553 0.195 38.402);
     --color-amber-400: oklch(0.828 0.189 84.429);
-    --color-amber-500: oklch(0.769 0.188 70.08);
     --color-lime-600: oklch(0.648 0.2 131.684);
-    --color-pink-500: oklch(0.656 0.241 354.308);
+    --color-neutral-300: oklch(0.87 0 0);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
-    --text-5xl: 3rem;
-    --text-5xl--line-height: 1;
     --text-6xl: 3.75rem;
     --text-6xl--line-height: 1;
+    --radius-lg: 0.5rem;
     --ease-in: cubic-bezier(0.4, 0, 1, 1);
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -349,29 +350,14 @@
       max-width: 96rem !important;
     }
   }
-  .mt-10 {
-    margin-top: calc(var(--spacing) * 10);
-  }
   .mt-35 {
     margin-top: calc(var(--spacing) * 35);
   }
-  .mb-4 {
-    margin-bottom: calc(var(--spacing) * 4);
+  .mt-75 {
+    margin-top: calc(var(--spacing) * 75);
   }
-  .mb-10 {
-    margin-bottom: calc(var(--spacing) * 10);
-  }
-  .mb-15 {
-    margin-bottom: calc(var(--spacing) * 15);
-  }
-  .mb-35 {
-    margin-bottom: calc(var(--spacing) * 35);
-  }
-  .mb-60 {
-    margin-bottom: calc(var(--spacing) * 60);
-  }
-  .mb-100 {
-    margin-bottom: calc(var(--spacing) * 100);
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
   }
   .box-border {
     box-sizing: border-box;
@@ -460,6 +446,9 @@
   .aspect-square {
     aspect-ratio: 1 / 1;
   }
+  .h-45 {
+    height: calc(var(--spacing) * 45);
+  }
   .h-screen {
     height: 100vh;
   }
@@ -474,6 +463,9 @@
   }
   .w-1\/2 {
     width: calc(1/2 * 100%);
+  }
+  .w-1\/5 {
+    width: calc(1/5 * 100%);
   }
   .w-screen {
     width: 100vw;
@@ -864,6 +856,9 @@
   .justify-items-stretch {
     justify-items: stretch;
   }
+  .gap-8 {
+    gap: calc(var(--spacing) * 8);
+  }
   .space-y-reverse {
     :where(& > :not(:last-child)) {
       --tw-space-y-reverse: 1;
@@ -949,6 +944,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .overflow-auto {
+    overflow: auto;
+  }
   .scroll-auto {
     scroll-behavior: auto;
   }
@@ -957,6 +955,9 @@
   }
   .rounded {
     border-radius: 0.25rem;
+  }
+  .rounded-lg {
+    border-radius: var(--radius-lg);
   }
   .rounded-s {
     border-start-start-radius: 0.25rem;
@@ -1066,6 +1067,18 @@
     --tw-border-style: solid;
     border-style: solid;
   }
+  .border-amber-400 {
+    border-color: var(--color-amber-400);
+  }
+  .border-orange-600 {
+    border-color: var(--color-orange-600);
+  }
+  .border-orange-700 {
+    border-color: var(--color-orange-700);
+  }
+  .border-red-700 {
+    border-color: var(--color-red-700);
+  }
   .bg-\(--my_variable\) {
     background-color: var(--my_variable);
   }
@@ -1083,9 +1096,6 @@
   }
   .bg-black {
     background-color: var(--color-black);
-  }
-  .bg-pink-500 {
-    background-color: var(--color-pink-500);
   }
   .bg-red-500 {
     background-color: var(--color-red-500);
@@ -1107,6 +1117,9 @@
   .bg-radial {
     --tw-gradient-position: in oklab;
     background-image: radial-gradient(var(--tw-gradient-stops));
+  }
+  .bg-\[url\(images\/ISSAltitude\.png\)\] {
+    background-image: url(images/ISSAltitude.png);
   }
   .bg-none {
     background-image: none;
@@ -1262,6 +1275,12 @@
   .object-top {
     object-position: top;
   }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
+  .pb-4 {
+    padding-bottom: calc(var(--spacing) * 4);
+  }
   .text-center {
     text-align: center;
   }
@@ -1303,10 +1322,6 @@
   }
   .align-top {
     vertical-align: top;
-  }
-  .text-5xl {
-    font-size: var(--text-5xl);
-    line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
   .text-6xl {
     font-size: var(--text-6xl);
@@ -1396,8 +1411,17 @@
   .text-amber-400 {
     color: var(--color-amber-400);
   }
-  .text-amber-500 {
-    color: var(--color-amber-500);
+  .text-neutral-300 {
+    color: var(--color-neutral-300);
+  }
+  .text-orange-600 {
+    color: var(--color-orange-600);
+  }
+  .text-orange-700 {
+    color: var(--color-orange-700);
+  }
+  .text-red-700 {
+    color: var(--color-red-700);
   }
   .text-white {
     color: var(--color-white);
@@ -1840,10 +1864,10 @@
   .transform-view {
     transform-box: view-box;
   }
-  .hover\:bg-pink-500 {
+  .hover\:border-lime-600 {
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-pink-500);
+        border-color: var(--color-lime-600);
       }
     }
   }
@@ -1854,11 +1878,14 @@
       }
     }
   }
-  .hover\:shadow-pink-500 {
-    &:hover {
-      @media (hover: hover) {
-        --tw-shadow-color: var(--color-pink-500);
-      }
+  .sm\:gap-20 {
+    @media (width >= 40rem) {
+      gap: calc(var(--spacing) * 20);
+    }
+  }
+  .sm\:p-8 {
+    @media (width >= 40rem) {
+      padding: calc(var(--spacing) * 8);
     }
   }
 }
@@ -1878,6 +1905,16 @@ main {
   50% {
     opacity: 0;
   }
+}
+main *::-webkit-scrollbar {
+  display: none;
+}
+main * {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body {
+  background-image: url(../images/ISSAltitude.png);
 }
 @property --tw-translate-x {
   syntax: "*";
