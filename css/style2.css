@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh; /* Take full viewport height */
+    margin: 0; /* Remove default body margin */
+    color: #FFFFFF;
+    background-color: #000000; 
+}
