@@ -42,3 +42,22 @@ body h1 {
 body a {
     font-family: "Iosevka", sans-serif;
 }
+
+/* terminal */
+.terminal {
+    font-size: 24px;
+    font-family: "Iosevka", sans-serif;
+    white-space: nowrap;
+}
+
+.cursor {
+    display: inline-block;
+    animation: blink 1.5s step-end infinite;
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
