@@ -365,9 +365,6 @@
   .mt-35 {
     margin-top: calc(var(--spacing) * 35);
   }
-  .mt-50 {
-    margin-top: calc(var(--spacing) * 50);
-  }
   .mt-75 {
     margin-top: calc(var(--spacing) * 75);
   }
@@ -1931,6 +1928,15 @@ main * {
 }
 body {
   background-image: url(../images/ISSAltitude.png);
+}
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
 }
 @property --tw-translate-x {
   syntax: "*";
