@@ -31,7 +31,7 @@ class Particle {
 }
 
 const particles = [];
-const numParticles = 150;
+const numParticles = 60;
 
 for (let i = 0; i < numParticles; i++) {
     particles.push(new Particle());
