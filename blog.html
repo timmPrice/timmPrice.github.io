@@ -15,12 +15,44 @@
                     <span id="text" data-title="Welcome to my blog."></span><span class="cursor">█</span>
                 </div>
             </div> 
-            <div class="flex flex-row content-center justify-center pt-5">
-                <p class = "text-md">under contruction</p> 
+        
+            <div class = "flex flex-row content-center justify-center pt-15">
+                <ol id = "blog-list" class="relative border-s dark:border-white">
+                    <!--THIS IS WHERE BLOGS ARE RENDERED-->
+                </ol>
             </div>
+
+            <script>
+                const blogs = [
+                    {
+                        title: "The 'Engoodening' of my .dotfiles",
+                        date: "03.31.2025",
+                        content: "Escaping the frustrating parts of .dotfile management, and trying to create a one-script install environment for all my development tools."
+                    },
+                ];
+
+                function renderBlogs(blogData) {
+                    const blogList = document.getElementById('blog-list');
+                    blogData.forEach(blog => {
+                        const li = document.createElement('li');
+                        li.classList.add('mb-10', 'ms-4');
+
+                        li.innerHTML = `
+                            <div class="absolute w-4 h-4 rounded-full mt-1.5 -start-1.5 border border-white dark:border-white dark:bg-black"></div>
+                            <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">${blog.date}</time>
+                            <a href = "./blogs/dotfiles.html"><h3 class="hover:text-lime-600 text-lg font-semibold text-gray-900 dark:text-white">${blog.title}</h3></a>
+                            <p class="text-base font-normal text-gray-500 dark:text-gray-400">${blog.content}</p>
+                        `;
+                        
+                        blogList.appendChild(li);
+                    });
+                }
+                renderBlogs(blogs);
+            </script>
+
+
         </main>
         <script src="src/term.js" defer></script>
-
         <canvas id="canvas"></canvas>
         <script src="src/particles.js"></script>
     </body>
