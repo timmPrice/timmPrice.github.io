@@ -1,0 +1,81 @@
+/*this is the global stylesheet for any written blog*/
+
+@font-face {
+    font-family: "Iosevka";
+    src: url("../fonts/IosevkaTermNerdFont-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+main {
+    font-family: "Iosevka";
+    font-size: "40px";
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically (if height is defined) */
+    width: 50%;               /* Set your desired width */
+    margin: 0 auto;           /* Center the <main> element itself */
+    min-height: 20vh;        /* Optional: full height to help with vertical centering */
+}
+
+/* Set background and text color globally */
+body {
+  background-color: black;
+  color: white;
+}
+
+/* Optional: Ensure all elements inherit text color unless overridden */
+* {
+  color: inherit;
+}
+
+.intro::first-letter {
+    float: left;
+    font-size: 3em;
+    line-height: 1;
+    padding-right: 0.1em;
+    font-weight: bold;
+}
+
+article h1 {
+    font-size: 3em;
+}
+
+article .sub {
+    font-size 16px;
+    color: #aaa;
+}
+
+.norm {
+    font-size: 20px;
+}
+.with-image {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 1em;
+  font-size: 20px;
+  margin-bottom: 2em;
+}
+
+.with-image img {
+  width: 300px;
+  border-left: 2px solid white;
+  padding-left: 1em;
+  margin-left: 1em;
+  height: auto;
+  object-fit: cover;
+}
+
+.with-image figcaption {
+  font-size: 12px;   /* Smaller font for the caption */
+  color: #aaa;       /* Light gray for caption text */
+  margin-top: 0.5em; /* Add some space between the image and the caption */
+  text-align: center; /* Optional: center the caption */
+}
+
+/* Optional: Make sure text fills the rest of the space */
+.with-image p {
+  flex: 1;
+  margin: 0;
+}
