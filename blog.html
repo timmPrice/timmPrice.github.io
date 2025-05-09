@@ -25,28 +25,41 @@
             <script>
                 const blogs = [
                     {
-                        title: "The 'Engoodening' of my .dotfiles",
-                        date: "03.31.2025",
-                        content: "Escaping the frustrating parts of .dotfile management, and trying to create a one-script install environment for all my development tools."
+                        title: "Using NeoVim for taking notes in university mathematics courses.",
+                        date: "04.08.2025",
+                        content: "setting up typst template, lsp for vim writting, and note take system for my upcoming math courses.",
+                        filename: "typst.html",
+                    },
+                    {
+                        title: "Animating Pixilated Procedural Fire ",
+                        date: "04.08.2025",
+                        content: "Animating pixilated fire procedurally. Display using html canvas.",
+                        filename: "proc-fire.html",
+                    },
+                    {
+                        title: "My experience switching to NixOs for a week",
+                        date: "04.08.2025",
+                        content: "giving nixos a second look, setting up a fully syncrenous system.",
+                        filename: "nix.html",
                     },
                 ];
 
-                function renderBlogs(blogData) {
-                    const blogList = document.getElementById('blog-list');
-                    blogData.forEach(blog => {
-                        const li = document.createElement('li');
-                        li.classList.add('mb-10', 'ms-4');
+                    function renderBlogs(blogData) {
+                        const blogList = document.getElementById('blog-list');
+                        blogData.forEach(blog => {
+                            const li = document.createElement('li');
+                            li.classList.add('mb-10', 'ms-4');
 
-                        li.innerHTML = `
-                            <div class="absolute w-4 h-4 rounded-full mt-1.5 -start-1.5 border border-white dark:border-white dark:bg-black"></div>
-                            <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">${blog.date}</time>
-                            <a href = "./blogs/dotfiles.html"><h3 class="hover:text-lime-600 text-lg font-semibold text-gray-900 dark:text-white">${blog.title}</h3></a>
-                            <p class="text-base font-normal text-gray-500 dark:text-gray-400">${blog.content}</p>
-                        `;
-                        
-                        blogList.appendChild(li);
-                    });
-                }
+                            li.innerHTML = `
+                                <div class="absolute w-4 h-4 rounded-full mt-1.5 -start-1.5 border border-white dark:border-white dark:bg-black"></div>
+                                <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">${blog.date}</time>
+                                <a href="./blogs/${blog.filename}"><h3 class="hover:text-lime-600 text-lg font-semibold text-gray-900 dark:text-white">${blog.title}</h3></a>
+                                <p class="text-base font-normal text-gray-500 dark:text-gray-400">${blog.content}</p>
+                            `;
+
+                            blogList.appendChild(li);
+                        });
+                    }
                 renderBlogs(blogs);
             </script>
 
