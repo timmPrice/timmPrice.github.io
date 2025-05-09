@@ -10,16 +10,25 @@
     --color-orange-600: oklch(0.646 0.222 41.116);
     --color-orange-700: oklch(0.553 0.195 38.402);
     --color-lime-600: oklch(0.648 0.2 131.684);
+    --color-gray-400: oklch(0.707 0.022 261.325);
+    --color-gray-500: oklch(0.551 0.027 264.364);
+    --color-gray-900: oklch(0.21 0.034 264.665);
     --color-neutral-300: oklch(0.87 0 0);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-3xl: 1.875rem;
     --text-3xl--line-height: calc(2.25 / 1.875);
     --text-6xl: 3.75rem;
     --text-6xl--line-height: 1;
+    --font-weight-normal: 400;
+    --font-weight-semibold: 600;
     --radius-lg: 0.5rem;
     --ease-in: cubic-bezier(0.4, 0, 1, 1);
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
@@ -239,6 +248,9 @@
   .sticky {
     position: sticky;
   }
+  .-start-1\.5 {
+    inset-inline-start: calc(var(--spacing) * -1.5);
+  }
   .right-0 {
     right: calc(var(--spacing) * 0);
   }
@@ -356,6 +368,12 @@
   .m-4 {
     margin: calc(var(--spacing) * 4);
   }
+  .ms-4 {
+    margin-inline-start: calc(var(--spacing) * 4);
+  }
+  .mt-1\.5 {
+    margin-top: calc(var(--spacing) * 1.5);
+  }
   .mt-5 {
     margin-top: calc(var(--spacing) * 5);
   }
@@ -370,6 +388,12 @@
   }
   .mr-8 {
     margin-right: calc(var(--spacing) * 8);
+  }
+  .mb-1 {
+    margin-bottom: calc(var(--spacing) * 1);
+  }
+  .mb-10 {
+    margin-bottom: calc(var(--spacing) * 10);
   }
   .ml-0 {
     margin-left: calc(var(--spacing) * 0);
@@ -461,6 +485,9 @@
   .aspect-square {
     aspect-ratio: 1 / 1;
   }
+  .h-4 {
+    height: calc(var(--spacing) * 4);
+  }
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
@@ -484,6 +511,9 @@
   }
   .w-1\/5 {
     width: calc(1/5 * 100%);
+  }
+  .w-4 {
+    width: calc(var(--spacing) * 4);
   }
   .w-8 {
     width: calc(var(--spacing) * 8);
@@ -977,6 +1007,9 @@
   .rounded {
     border-radius: 0.25rem;
   }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
+  }
   .rounded-lg {
     border-radius: var(--radius-lg);
   }
@@ -1090,6 +1123,9 @@
   }
   .border-orange-600 {
     border-color: var(--color-orange-600);
+  }
+  .border-white {
+    border-color: var(--color-white);
   }
   .bg-\(--my_variable\) {
     background-color: var(--my_variable);
@@ -1346,13 +1382,29 @@
     font-size: var(--text-6xl);
     line-height: var(--tw-leading, var(--text-6xl--line-height));
   }
+  .text-base {
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
+  }
   .text-lg {
     font-size: var(--text-lg);
     line-height: var(--tw-leading, var(--text-lg--line-height));
   }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
   .leading-none {
     --tw-leading: 1;
     line-height: 1;
+  }
+  .font-normal {
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
   }
   .text-balance {
     text-wrap: balance;
@@ -1426,6 +1478,15 @@
   }
   .\[color\:red\]\/50\! {
     color: color-mix(in oklab, red 50%, transparent) !important;
+  }
+  .text-gray-400 {
+    color: var(--color-gray-400);
+  }
+  .text-gray-500 {
+    color: var(--color-gray-500);
+  }
+  .text-gray-900 {
+    color: var(--color-gray-900);
   }
   .text-neutral-300 {
     color: var(--color-neutral-300);
@@ -1901,6 +1962,31 @@
       padding: calc(var(--spacing) * 8);
     }
   }
+  .dark\:border-white {
+    @media (prefers-color-scheme: dark) {
+      border-color: var(--color-white);
+    }
+  }
+  .dark\:bg-black {
+    @media (prefers-color-scheme: dark) {
+      background-color: var(--color-black);
+    }
+  }
+  .dark\:text-gray-400 {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-gray-400);
+    }
+  }
+  .dark\:text-gray-500 {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-gray-500);
+    }
+  }
+  .dark\:text-white {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-white);
+    }
+  }
 }
 @font-face {
   font-family: "Iosevka";
@@ -2036,6 +2122,10 @@ body {
   initial-value: 0;
 }
 @property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
   syntax: "*";
   inherits: false;
 }
