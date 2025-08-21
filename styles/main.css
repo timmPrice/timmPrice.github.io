@@ -1,0 +1,85 @@
+h1, h2, h3{
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+a {
+    text-decoration = none;
+    color: inherit;
+}
+
+.atkinson-hyperlegible-next-<uniquifier> {
+  font-family: "Atkinson Hyperlegible Next", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+
+body {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #0F0F0F;
+    color: #E5E7EB;
+    font-family: "Atkinson Hyperlegible Next";
+    position: relative;
+    
+    background-image: url("../asset/blurry-gradient.svg");
+    background-repeat: no-repeat, no-repeat;
+    background-size: cover, cover;
+    background-position: center, center;
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  padding: 1rem;
+}
+
+body h1 {
+    font-weight: 900;
+}
+
+body p, body h2, nav {
+    color: #D1D5DB; 
+}
+
+p {
+    font-weight: 500;
+}
+
+nav ul{
+    font-weight: 700;
+    width: 100%;
+    gap: 1rem;
+    display: flex;
+    padding: 1rem;
+}
+
+body h2 ul {
+    font-weight: 900;
+    width: 100%;
+    gap: 0.5rem;
+    display: flex;
+    padding: 0rem;
+}
+
+nav ul #bw {
+    margin-left: auto;
+    padding-right: 10px;
+}
+
+.wrapper {
+    padding-top: 4rem;
+}
+
+.image--cover {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+
+  object-fit: cover;
+  object-position: center right;
