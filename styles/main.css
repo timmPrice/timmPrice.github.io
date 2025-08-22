@@ -8,6 +8,14 @@ a {
     color: inherit;
 }
 
+ul a:hover {
+    color: #E9C071; 
+}
+
+.dot {
+    color: #E9C071; 
+}
+
 .atkinson-hyperlegible-next-<uniquifier> {
   font-family: "Atkinson Hyperlegible Next", sans-serif;
   font-optical-sizing: auto;
@@ -70,6 +78,15 @@ body h2 ul {
 nav ul #bw {
     margin-left: auto;
     padding-right: 10px;
+}
+
+nav ul a {
+    text-decoration: none;
+}
+
+nav ul a:hover {
+    text-decoration: underline;
+    color: #E9C071; 
 }
 
 .wrapper {
