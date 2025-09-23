@@ -10,7 +10,7 @@
     --bg-color: #E5E7EB;
     --main-text-color:  #414B5A;
     --secondary-text-color: #525E6D;
-    --hl-color: #6E94B2;
+    --hl-color: #458588;
     --bg-image: url("../asset/short_gradient_lm.png")
 }
 
@@ -37,6 +37,16 @@ ul a:hover {
   font-optical-sizing: auto;
   font-weight: <weight>;
   font-style: normal;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scroll{
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 body {
@@ -74,17 +84,20 @@ body {
 }
 
 main {
-    flex:1;
+    flex: 1;
     padding-bottom: 2rem;
 }
 
 footer {
+  margin-top: auto;
   width: 100%;
   padding: 1rem 0;
   text-align: left;
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 480px;
   padding: 1rem;
