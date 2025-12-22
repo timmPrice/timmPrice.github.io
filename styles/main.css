@@ -65,7 +65,9 @@ body {
     color: var(--main-text-color);
     font-family: "Atkinson Hyperlegible Next";
     position: relative;
-    
+}
+
+body.index {
     background-image: var(--bg-image);
     background-repeat: no-repeat, no-repeat;
     background-size: cover, cover;
@@ -109,7 +111,7 @@ body h1 {
 }
 
 body p, body h2, nav {
-    color: var(--secondary-text-color); 
+    /* color: var(--secondary-text-color);  */
 }
 
 p {
@@ -174,3 +176,11 @@ main a.link:hover {
 
   object-fit: cover;
   object-position: center right;
+}
+
+.glow {
+    text-shadow:
+        0 0 5px currentColor,
+        0 0 10px currentColor, 
+        0 0 15px currentColor;
+}
