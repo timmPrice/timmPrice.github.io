@@ -10,7 +10,6 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-
     </head>
     <body>
         <div class = "container">
@@ -20,10 +19,29 @@
                     <a href = "./works.html"><li>works</li></a> 
                     <a href = "./posts.html"><li>posts</li></a> 
                     <a href = "./uses.html"><li>uses</li></a> 
-                    <button id="lm-toggle"><li>日</li></button>
+                    <button id="lm-toggle", class = "glow"><li>日</li></button>
                 </ul>
             </nav>
             <main>
+                <ul id = post-list></ul>
+                <script src="../src/post-data.js"></script>
+                <script>
+                    function render_pl(postData) {
+                        const postList = document.getElementById("post-list");
+                        postList.innerHTML = "";
+
+                        postData.forEach(post => {
+                            const li = document.createElement("li");
+                            li.innerHTML = `
+                                ${post.date}
+                                <a href="../posts/${post.filename}">${post.title}</a>
+                            `;
+                            postList.appendChild(li);
+                        });
+                    }
+
+                    render_pl(posts);
+                </script>
                 <p style = "position: absolute; bottom: 0; width: 100%; padding-bottom: 1rem">🎉 powered by coffee and gumption (/gŭmp′shən/)</p>
             </main>
         </div>
