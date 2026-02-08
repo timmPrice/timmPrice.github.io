@@ -6,8 +6,21 @@
         <title></title>
         <link href="../styles/main.css" rel="stylesheet">
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     </head>
     <body>
+        <div class = "container">
+            <nav>
+                <ul style ="list-style: none; padding: 0; margin: 0;">
+                    <a href = "../index.html"><li>home</li></a>
+                    <a href = "../pages/works.html"><li>works</li></a> 
+                    <a href = "../pages/posts.html"><li>posts</li></a> 
+                    <a href = "../pages/uses.html"><li>uses</li></a> 
+                    <button id="lm-toggle", class = "glow"><li>日</li></button>
+                </ul>
+            </nav>
         <article>
             <p>#calculus #integration #math #trig</p>
 <p><em>Motivation</em> · Some integrals can be simplified by substituting trig functions into the integrand.</p>
@@ -39,5 +52,6 @@
 _\square
 \]</span></p> 
         </article>
+        <script src = "./src/lm-toggle.js"></script>
     </body>
 </html>
