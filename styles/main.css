@@ -1,0 +1,201 @@
+:root {
+    --bg-color: #0F0F0F;
+    --main-text-color:  #E5E7EB;
+    --secondary-text-color: #D1D5DB;
+    --hl-color: #E9C071;
+    --bg-image: url("../asset/short_gradient.png")
+}
+
+.light {
+    --bg-color: #E5E7EB;
+    --main-text-color:  #414B5A;
+    --secondary-text-color: #525E6D;
+    --hl-color: #458588;
+    --bg-image: url("../asset/short_gradient_lm.png")
+}
+
+h1, h2, h3{
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+a {
+    text-decoration= none;
+    color: inherit;
+}
+
+ul a:hover {
+    color: var(--hl-color); 
+}
+
+.dot {
+    color: var(--hl-color); 
+}
+
+.atkinson-hyperlegible-next-<uniquifier> {
+  font-family: "Atkinson Hyperlegible Next", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scroll{
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+body {
+    animation: fadeInAnimation ease 1.5s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+
+    overflow-x: hidden;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--main-text-color);
+    font-family: "Atkinson Hyperlegible Next";
+    position: relative;
+}
+
+body.index {
+    background-image: var(--bg-image);
+    background-repeat: no-repeat, no-repeat;
+    background-size: cover, cover;
+    background-position: center, center;
+    transition: background 0.3s, color 0.3s;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+main {
+    flex: 1;
+    padding-bottom: 2rem;
+}
+
+footer {
+  margin-top: auto;
+  width: 100%;
+  padding: 1rem 0;
+  text-align: left;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  padding: 1rem;
+}
+
+
+body h1 {
+    font-weight: 900;
+}
+
+body p, body h2, nav {
+    /* color: var(--secondary-text-color);  */
+}
+
+p {
+    font-weight: 500;
+}
+
+nav ul{
+    font-weight: 700;
+    width: 100%;
+    gap: 1rem;
+    display: flex;
+    padding: 1rem;
+}
+
+body h2 ul {
+    font-weight: 900;
+    width: 100%;
+    gap: 0.5rem;
+    display: flex;
+    padding: 0rem;
+}
+
+nav ul #lm-toggle {
+    margin-left: auto;
+    padding-right: 10px;
+   
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    height: auto;
+    background: none;
+    color: var(--hl-color);
+}
+
+
+nav ul a {
+    text-decoration: none;
+}
+
+nav ul a:hover {
+    text-decoration: underline;
+    color: var(--hl-color); 
+}
+
+main a.link {
+    color: var(--hl-color); 
+    text-decoration: none;
+}
+
+main a.link:hover {
+    text-decoration: underline;
+}
+
+.wrapper {
+    padding-top: 4rem;
+}
+
+.image--cover {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+
+  object-fit: cover;
+  object-position: center right;
+}
+
+.glow {
+    text-shadow:
+        0 0 5px currentColor,
+        0 0 10px currentColor, 
+        0 0 15px currentColor;
+}
+
+#post-list li {
+    position: relative;
+    padding-left: 1.5rem; 
+    margin-bottom: 0.5rem;
+}
+
+#post-list li::before {
+    
+    content: "‣";
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+

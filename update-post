@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+
+SOURCE="$HOME/obs-notes/post"
+DEST="./posts"
+POST="./src/post-data.js"
+
+echo " ⏳ exporting posts"
+mkdir -p "$DEST"
+
+echo "var posts = [" > "$POST"
+
+for file in "$SOURCE"/*.md; do
+    [ -e "$file" ] || continue
+    i=0 
+    fn=$(basename "$file" .md)
+    html_name="$fn.html"
+
+    echo "exporting $fn"
+    pandoc "$file" \
+        --mathjax \
+        --template=./pages/post-template.html\
+        --wrap=none \
+        -o "$DEST/$fn.html"
+
+    echo "    {" >> "$POST"
+    echo "        title: \"$fn\"," >> "$POST"
+    echo "        date: \"\"," >> "$POST"
+    echo "        filename: \"$html_name\"," >> "$POST"
+    echo "    }," >> "$POST"
+    
+    ((i++))
+
+    echo " ✅ finished $fn"
+done
+echo "]" >> "$POST"
+
+echo "finished exporting $i posts ✅ "

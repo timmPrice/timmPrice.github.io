@@ -3,44 +3,48 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>home</title>
-        <link href="src/output.css" rel="stylesheet">
-        <link rel="icon" href="images/knight.png" type="image/png">
+        <title>zenroutes</title>
+        <link href="styles/main.css" rel="stylesheet">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
     </head>
-    <body class="bg-black  bg-cover bg-center text-white">
-        <main>
-            <div class="links flex flex-wrap">
-                <a href="https://www.linkedin.com/in/timPrice6/" target="_blank"><img src="./images/li.png" alt="github" class="w-8 h-8 m-4"></a>
-                <a href="https://github.com/timmprice" target="_blank"><img src="./images/gh.png" alt="github" class="w-8 h-8 m-4 ml-0"></a>
-                <a href="https://www.github.com/timmPrice" class="text-orange-600 hover:text-lime-600 mr-8 text-lg absolute right-0 m-4" target="_blank">résumé ⮚</a>
-            </div>
-            <div class="flex flex-col items-center">
-                <div class="terminal text-6xl mt-35" >
-                    <span id="text" data-title="Tim Price"></span><span class="cursor">█</span>
+    <body class = "index">
+        <div class = "container">
+            <nav>
+                <ul style ="list-style: none; padding: 0; margin: 0;">
+                    <a href = "./index.html"><li>home</li></a>
+                    <a href = "./pages/works.html"><li>works</li></a> 
+                    <a href = "./pages/posts.html"><li>posts</li></a> 
+                    <a href = "./pages/uses.html"><li>uses</li></a> 
+                    <button id="lm-toggle", class = "glow"><li>日</li></button>
+                </ul>
+            </nav>
+            <main>
+                <div class = "wrapper">
+                    <img src = "./asset/pfp.png" alt = "" class = "image--cover"> 
                 </div>
-            </div>
-
-            <div class="containers flex flex-wrap justify-center gap-8 sm:gap-20 mt-75" >
-                <div class="w-1/5 border border-orange-600 p-4 sm:p-8 rounded-lg h-45 hover:border-lime-600 hover:text-lime-600 overflow-auto text-ellipsis ">
-                   <a href = "blog.html">
-                   <p class="pb-4 text-lg">blog  ~</p> 
-                   <p class="text-neutral-300">Imperfect logs of what I have been working on. Updated semi-regularly to document my projects</p> 
-                   </a>
-                </div>
-                <div class="w-1/5 border border-orange-600 p-4 sm:p-8 rounded-lg h-45 hover:border-lime-600 hover:text-lime-600 overflow-auto text-ellipsis">
-                   <a href = "project.html">
-                   <p class="pb-4 text-lg">projects  ~</p>
-                   <p class="text-neutral-300">A somewhat comprehensive collection of the projects I have been working on</p>
-                   </a>
-                </div>
-            </div>
-            <div class="flex flex-col justify-end items-center mt-30">
-                <p>🎉 powered by coffee and gumption (/gŭmp′shən/) • credit NASA image iss067e036271 (May 7, 2022)</p> 
-            </div>
-            <script src="src/term.js" defer></script>
-
-            <canvas id="canvas"></canvas>
-            <script src="src/particles.js"></script>
-        </main>
+                <h1>Tim Price<span class = "dot">.</span></h1>
+                <h3>Augusta, Ga</h3>
+                <h2>
+                    <ul style = "list-style: none; padding: 0; margin: 0;">
+                        <li><a target = "_blank" href = "https://github.com/timmprice"><i class="fa-brands fa-github"></i></a></li>
+                        <li><a target = "_blank" href = "https://linkedin.com/in/timprice6"><i class="fa-brands fa-linkedin"></a></i></li>
+                        <li><a target = "_blank" href = "https://discord.com/users/466033392224436255"><i class="fa-brands fa-discord"></a></i></li>
+                        <li><a target = "_blank" href = "https://www.youtube.com/@timmPrice"><i class="fa-brands fa-youtube"></a></i></li>
+                    </ul>
+                </h2>
+                <p>I'm a computer science major and minoring in mathematics. I currently work as 
+                an information technology student assistant at Augusta University.</p>
+                <p>My current interest are keyboards, linux, chess engines, and compilers/transpilers.
+                <a class = "link" href = "https://www.github.com/timmprice/.dotfiles/">linux enviornment</a>.</p>
+                <p style = "position: absolute; bottom: 0; width: 100%; padding-bottom: 1rem">🎉 powered by caffeine (/kæˈfiːn/) and gumption (/gŭmp′shən/)</p>
+            </main>
+        </div>
+        <script src = "./src/lm-toggle.js"></script>
+        <script src = "./src/lorem.js"></script>
     </body>
 </html>
