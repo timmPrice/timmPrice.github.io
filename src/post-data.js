@@ -1,12 +1,7 @@
 var posts = [
     {
-        title: "Integration by Parts",
+        title: "Untitled",
         date: "",
-        filename: "Integration by Parts.html",
-    },
-    {
-        title: "Trigonometric Substitution",
-        date: "",
-        filename: "Trigonometric Substitution.html",
+        filename: "Untitled.html",
     },
 ]
