@@ -10,6 +10,9 @@ Static personal site. No build step — plain HTML/CSS/JS.
 - `obsidian-plugin/export-to-html-custom/` — modified fork of kalvn's "Export to HTML"
   plugin. Symlinked into `~/obs-notes/.obsidian/plugins/` (the vault gitignores `.obsidian/`),
   so it is versioned here. User must reload the plugin in Obsidian after edits.
+  **Source of truth is `~/repos/obsidian-export-to-html`** (TypeScript, `src/main.ts` for the
+  HTML template, `src/HtmlRenderer.ts` for image embedding). Edit there, `npm run build`, then
+  copy its `main.js` into `obsidian-plugin/export-to-html-custom/`. Never hand-patch the built file.
 
 ## Writing / exporting
 - Source notes live in `~/obs-notes/post/` and are named `<name>.html.md`, so the plugin's
