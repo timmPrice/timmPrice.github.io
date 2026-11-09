@@ -1,0 +1,254 @@
+/* Shared styles for posts exported from Obsidian.
+ * Linked by the export plugin template as ../styles/post.css, so it works
+ * from both pages/ and posts/. Palette + font copied from main.css. */
+
+:root {
+    --bg-color: #0F0F0F;
+    --main-text-color: #E5E7EB;
+    --secondary-text-color: #D1D5DB;
+    --muted-color: #9CA3AF;
+    --hl-color: #E9C071;
+    --border-color: #262626;
+    --code-bg: #1A1A1A;
+}
+
+.light {
+    --bg-color: #E5E7EB;
+    --main-text-color: #414B5A;
+    --secondary-text-color: #525E6D;
+    --muted-color: #6B7280;
+    --hl-color: #458588;
+    --border-color: #D1D5DB;
+    --code-bg: #D9DCE1;
+}
+
+html {
+    background: var(--bg-color);
+}
+
+/* ---- page ---- */
+body.markdown-body {
+    /* remap the github-markdown tokens onto the site palette */
+    color-scheme: dark;
+    --fgColor-default: var(--main-text-color);
+    --fgColor-muted: var(--muted-color);
+    --fgColor-accent: var(--hl-color);
+    --bgColor-default: var(--bg-color);
+    --bgColor-muted: var(--code-bg);
+    --bgColor-neutral-muted: var(--code-bg);
+    --borderColor-default: var(--border-color);
+    --borderColor-muted: var(--border-color);
+
+    box-sizing: border-box;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 5rem;
+    background: var(--bg-color);
+    color: var(--main-text-color);
+    font-family: "Atkinson Hyperlegible Next", sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.7;
+    animation: fadeIn ease 1.5s;
+}
+
+body.markdown-body.light {
+    color-scheme: light;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ---- header: everything above the first <hr> ---- */
+body.markdown-body:has(> hr) > :not(hr, hr ~ *) {
+    text-align: center;
+}
+
+/* title */
+body.markdown-body:has(> hr) > :is(h1, h2):not(hr ~ *) {
+    margin: 0 0 0.25rem;
+    padding: 0;
+    border: none;
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--main-text-color);
+}
+
+/* subtitle (a second heading right under the title) */
+body.markdown-body:has(> hr) > :is(h1, h2):not(hr ~ *) + h2 {
+    margin-top: 0;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+}
+
+/* date / blurb line */
+body.markdown-body:has(> hr) > p:not(hr ~ *):not(:has(a)) {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--muted-color);
+}
+
+body.markdown-body .cm-iconize-icon {
+    display: inline-flex !important;
+    color: var(--hl-color);
+}
+
+/* ---- body content ---- */
+body.markdown-body hr {
+    height: 1px;
+    margin: 2rem 0;
+    border: none;
+    background: var(--border-color);
+}
+
+body.markdown-body :is(h1, h2, h3, h4, h5, h6) {
+    font-weight: 800;
+    color: var(--main-text-color);
+}
+
+body.markdown-body hr ~ :is(h1, h2) {
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.markdown-body hr ~ h3 {
+    margin-top: 2rem;
+}
+
+body.markdown-body p {
+    font-weight: 400;
+}
+
+body.markdown-body a {
+    color: var(--hl-color);
+    text-decoration: none;
+}
+
+body.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+body.markdown-body strong {
+    font-weight: 700;
+    color: var(--main-text-color);
+}
+
+body.markdown-body li::marker {
+    color: var(--hl-color);
+}
+
+body.markdown-body blockquote {
+    border-left: 3px solid var(--hl-color);
+    color: var(--secondary-text-color);
+}
+
+body.markdown-body :is(code, pre) {
+    background: var(--code-bg);
+    border-radius: 6px;
+}
+
+body.markdown-body img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    border-radius: 8px;
+}
+
+body.markdown-body .tag {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: var(--hl-color);
+}
+
+::selection {
+    background: var(--hl-color);
+    color: var(--bg-color);
+}
+
+/* ---- shell prompt footer (after a ---, starts with the ~ link) ----
+ *   [[../index.html|~]]/[[../pages/posts.html|posts]]/post_name
+ * renders as:  tim@zenroutes:~/posts/post_name $ █                      */
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"]) {
+    position: relative;
+    width: fit-content;
+    margin: 2.5rem auto 3rem;
+    text-align: left;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(0.68rem, 3vw, 0.9rem);
+    white-space: nowrap;
+    color: var(--secondary-text-color);
+}
+
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"])::before {
+    content: "tim@zenroutes";
+    color: var(--hl-color);
+    font-weight: 700;
+}
+
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"]) > a:first-child::before {
+    content: ":";
+    color: var(--muted-color);
+    font-weight: 400;
+}
+
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"]) > a {
+    font-weight: 700;
+    color: var(--main-text-color);
+}
+
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"]) > a:hover {
+    color: var(--hl-color);
+    text-decoration: none;
+}
+
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"])::after {
+    content: " $ █";
+    color: var(--muted-color);
+    animation: blink 1.1s steps(1) infinite;
+}
+
+/* ---- back / home buttons (line directly above the first ---) ----
+ *   [[../pages/posts.html| ⮘ back ]] :LiActivity:  [[../index.html|home ⮚]]   */
+body.markdown-body:has(> hr) > p:has(+ hr):has(> a):not(hr ~ *) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+}
+
+body.markdown-body:has(> hr) > p:has(+ hr):has(> a):not(hr ~ *) > a {
+    font-weight: 700;
+    color: var(--main-text-color);
+    transition: color 0.2s;
+}
+
+body.markdown-body:has(> hr) > p:has(+ hr):has(> a):not(hr ~ *) > a:hover {
+    color: var(--hl-color);
+    text-decoration: none;
+}
+
+/* footnote under the prompt, lined up with "tim@" — generated so it's on every page */
+body.markdown-body > hr ~ p:has(> a:first-child[href$="index.html"]) > a:first-child::after {
+    content: "Exported directly from my Obsidian vault.";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.4rem;
+    font-family: "Atkinson Hyperlegible Next", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--muted-color);
+    pointer-events: none;
+}
+
+@keyframes blink {
+    50% { opacity: 0.35; }
+}
