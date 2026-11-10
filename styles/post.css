@@ -159,6 +159,31 @@ body.markdown-body img {
     border-radius: 8px;
 }
 
+/* ---- first-line indent on the opening paragraph after a --- ----
+ * (skips image-only paragraphs and the ~/posts prompt footer) */
+body.markdown-body > hr + p:not(:has(img)):not(:has(> a:first-child[href$="index.html"])) {
+    text-indent: 2em;
+}
+
+/* ---- image captions: an *italic* line directly under the image ----
+ *   ![[photo.webp]]
+ *   *caption text*                                                    */
+body.markdown-body p:has(> .image-embed) > br {
+    display: none;
+}
+
+body.markdown-body p:has(> .image-embed):has(> em) img {
+    margin-bottom: 0.5rem;
+}
+
+body.markdown-body p:has(> .image-embed) > em {
+    display: block;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted-color);
+}
+
 body.markdown-body .tag {
     padding: 0.1rem 0.5rem;
     border: 1px solid var(--border-color);
