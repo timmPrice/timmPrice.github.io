@@ -36,11 +36,19 @@
     const WARMUP_S = 4;                  // short warm-up: flocks have formed, but haven't merged yet
 
     // --- obstacles ---
-    const AVOID = "nav li, main img, main h1, main h3, main .social, main p, footer p";
-    const AVOID_MARGIN = 34;             // css px around text where boids get pushed
+    // Clear zones around page content. Each element becomes one or more shapes; clusters thin
+    // out over `feather` css px beyond `clear` px of empty space. `round` = corner radius.
+    //   text: one rounded rect per line of text (follows ragged line ends, tight to short headings)
+    //   nav: each link gets its own small pocket
+    //   round images (the avatar): an exact circle
+    const AVOID = [
+        { sel: "nav li", clear: 4, feather: 26, round: 12 },
+        { sel: "main img", clear: 1, feather: 14, round: 0 },
+        { sel: "main .social", clear: 6, feather: 60, round: 20 },
+        { sel: "main h1, main h3, main p, footer p", lines: true, clear: 6, feather: 90, round: 36 },
+    ];
+    const AVOID_MARGIN = 34;             // css px around content where boids get pushed
     const AVOID_W = 5;
-    const CLEAR = 6;                     // css px right around text that stays completely empty
-    const FEATHER = 90;                  // css px over which clusters thin out toward text (soft, rounded edges)
     const BASE_CURSOR_R = 110, CURSOR_W = 6;
 
     // scaled values, recomputed on resize
@@ -139,27 +147,74 @@
             if (shown) { shown.fill(-1); ctx.clearRect(0, 0, canvas.width, canvas.height); }   // colours changed: repaint all
         }
 
+        // one rounded rect per rendered line of an element's text (merging fragments on a line)
+        function lineRects(el) {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const lines = [];
+            for (const r of range.getClientRects()) {
+                if (!r.width || !r.height) continue;
+                const line = lines.find(l => Math.abs(l.t - r.top) < r.height / 2);
+                if (line) { line.l = Math.min(line.l, r.left); line.r = Math.max(line.r, r.right); line.b = Math.max(line.b, r.bottom); }
+                else lines.push({ l: r.left, t: r.top, r: r.right, b: r.bottom });
+            }
+            return lines;
+        }
+
+        // signed distance from (px, py) to a shape (negative inside)
+        function sdist(o, px, py) {
+            if (o.circle) return Math.hypot(px - o.cx, py - o.cy) - o.rad;
+            const R = o.R, hx = (o.r - o.l) / 2, hy = (o.b - o.t) / 2;
+            const qx = Math.abs(px - (o.l + hx)) - (hx - R), qy = Math.abs(py - (o.t + hy)) - (hy - R);
+            return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - R;
+        }
+
+        let shapes = [];
         function readObstacles() {
-            rects = [...document.querySelectorAll(AVOID)]
-                .map(el => el.getBoundingClientRect())
-                .filter(r => r.width && r.height && r.bottom > -200 && r.top < vh + 200)
-                .map(r => ({ l: r.left, t: r.top, r: r.right, b: r.bottom }));
-            // per-cell clearance 0..1 from the distance to the nearest text block. Distance to a
-            // rectangle is rounded at the corners, so the fade hugs the text in soft rounded shapes.
+            shapes = [];
+            for (const a of AVOID) {
+                for (const el of document.querySelectorAll(a.sel)) {
+                    const box = el.getBoundingClientRect();
+                    if (!box.width || !box.height || box.bottom < -200 || box.top > vh + 200) continue;
+                    const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+                    if (el.tagName === "IMG" && radius >= Math.min(box.width, box.height) / 2 - 1) {
+                        const rad = Math.min(box.width, box.height) / 2;
+                        shapes.push({ circle: true, cx: box.left + box.width / 2, cy: box.top + box.height / 2, rad,
+                            l: box.left, t: box.top, r: box.right, b: box.bottom, clear: a.clear, feather: a.feather });
+                        continue;
+                    }
+                    for (const r of (a.lines ? lineRects(el) : [{ l: box.left, t: box.top, r: box.right, b: box.bottom }])) {
+                        const R = Math.min(a.round, (r.r - r.l) / 2, (r.b - r.t) / 2);
+                        shapes.push({ ...r, R, clear: a.clear, feather: a.feather });
+                    }
+                }
+            }
+            rects = shapes;   // boid steering uses the bounding boxes
+
+            // per-cell clearance 0..1: the lowest fade factor of any shape near the cell
             clear = new Float32Array(cols * rows);
             for (let y = 0; y < rows; y++) {
                 const py = (y + 0.5) * LINE_PX;
                 for (let x = 0; x < cols; x++) {
                     const px = (x + 0.5) * cw;
-                    let d = Infinity;
-                    for (const r of rects) {
-                        const dx = Math.max(r.l - px, 0, px - r.r), dy = Math.max(r.t - py, 0, py - r.b);
-                        const dd = dx * dx + dy * dy;
-                        if (dd < d) d = dd;
+                    let c = 1;
+                    for (const o of shapes) {
+                        const reach = o.clear + o.feather;
+                        if (px < o.l - reach || px > o.r + reach || py < o.t - reach || py > o.b + reach) continue;
+                        const f = smooth(o.clear, reach, sdist(o, px, py));
+                        if (f < c) { c = f; if (c === 0) break; }
                     }
-                    clear[y * cols + x] = smooth(CLEAR, CLEAR + FEATHER, Math.sqrt(d));
+                    clear[y * cols + x] = c;
                 }
             }
+        }
+
+        // layout changes (scroll, fonts, images) are batched to one re-measure per frame
+        let obstaclesQueued = false;
+        function queueObstacles(then) {
+            if (obstaclesQueued) return;
+            obstaclesQueued = true;
+            requestAnimationFrame(() => { obstaclesQueued = false; readObstacles(); if (then) then(); });
         }
 
         // FLOCKS tight groups spread around the screen, each with its own heading
@@ -408,8 +463,8 @@
 
         // resize() keeps the existing flock; it only rebuilds the grid and tops up / trims the count
         window.addEventListener("resize", () => { resize(); if (reduceMotion) still(); });
-        window.addEventListener("scroll", () => { readObstacles(); if (reduceMotion) still(); }, { passive: true });
-        window.addEventListener("load", () => { readObstacles(); if (reduceMotion) still(); });
+        window.addEventListener("scroll", () => queueObstacles(reduceMotion ? still : null), { passive: true });
+        window.addEventListener("load", () => queueObstacles(reduceMotion ? still : null));
         // glyph width changes once JetBrains Mono loads
         if (document.fonts) document.fonts.ready.then(() => { resize(); if (reduceMotion) still(); });
         window.addEventListener("pointermove", e => { cursor.x = e.clientX; cursor.y = e.clientY; }, { passive: true });
