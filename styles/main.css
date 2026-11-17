@@ -3,11 +3,10 @@
     --main-text-color:  #E5E7EB;
     --secondary-text-color: #D1D5DB;
     --hl-color: #E9C071;
-    /* energy blob colours (src/ascii.js) */
-    --blob-a: #E9C071;
-    --blob-b: #4E8A4A;
-    --blob-c: #458588;
-    --blob-core: #FFF4D6;
+    /* boid colours, blended by heading (src/boids.js) */
+    --sim-a: #E9C071;
+    --sim-b: #4E8A4A;
+    --sim-c: #458588;
 }
 
 /* "light" theme is greyscale: mid-grey page, white accents */
@@ -16,10 +15,9 @@
     --main-text-color:  #121212;
     --secondary-text-color: #262626;
     --hl-color: #F7F6F2;
-    --blob-a: #FFFFFF;
-    --blob-b: #4A4945;
-    --blob-c: #8C8A84;
-    --blob-core: #1C1B19;          /* ink: cores darken on newsprint */
+    --sim-a: #1C1B19;              /* ink tones on newsprint */
+    --sim-b: #4A4945;
+    --sim-c: #8C8A84;
 }
 
 /* white text on grey is hard to read, so links keep the text colour
@@ -91,8 +89,8 @@ body.index {
     transition: background 0.3s, color 0.3s;
 }
 
-/* animated ASCII blob background, created by src/ascii.js */
-canvas.blobs {
+/* animated ASCII boids background, created by src/boids.js */
+canvas.sim {
     position: fixed;
     inset: 0;
     width: 100%;
