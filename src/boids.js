@@ -51,8 +51,10 @@
     function applyScale(w, h) {
         S = Math.min(S_MAX, Math.max(S_MIN, Math.sqrt(w * h) / 1000));
         SPLAT_R = BASE_SPLAT_R * S;
-        MIN_SPEED = BASE_SPEED[0] * S; MAX_SPEED = BASE_SPEED[1] * S;
-        MAX_FORCE = BASE_MAX_FORCE * S;
+        // speed and steering do NOT scale: glyphs are a fixed size, so the same css px/s keeps the
+        // same pace on every screen (scaled speed made big-screen flocks churn through cells)
+        MIN_SPEED = BASE_SPEED[0]; MAX_SPEED = BASE_SPEED[1];
+        MAX_FORCE = BASE_MAX_FORCE;
         SEP_R = Math.max(BASE_SEP_R * S, FONT_PX * 1.2);   // never closer than ~one glyph
         ALIGN_R = BASE_ALIGN_R * S; COH_R = BASE_COH_R * S; CURSOR_R = BASE_CURSOR_R * S;
     }
@@ -187,7 +189,7 @@
 
         function resize() {
             dpr = window.devicePixelRatio || 1;
-            const pw = vw, ph = vh, pS = S;
+            const pw = vw, ph = vh;
             vw = window.innerWidth;
             vh = window.innerHeight;
             applyScale(vw, vh);
@@ -212,7 +214,7 @@
             readObstacles();
             const perFlock = Math.round(PER_FLOCK_BASE + PER_FLOCK_PER_S * S);
             if (!boids.length) spawnFlocks(perFlock);
-            else refit(perFlock, vw / (pw || vw), vh / (ph || vh), S / (pS || S));
+            else refit(perFlock, vw / (pw || vw), vh / (ph || vh), 1);
         }
 
         function limit(x, y, max) {
