@@ -39,7 +39,8 @@
     const AVOID = "nav li, main img, main h1, main h3, main .social, main p, footer p";
     const AVOID_MARGIN = 34;             // css px around text where boids get pushed
     const AVOID_W = 5;
-    const HIDE_PAD = 14;                 // never draw glyphs over text (+ this padding)
+    const CLEAR = 6;                     // css px right around text that stays completely empty
+    const FEATHER = 90;                  // css px over which clusters thin out toward text (soft, rounded edges)
     const BASE_CURSOR_R = 110, CURSOR_W = 6;
 
     // scaled values, recomputed on resize
@@ -75,18 +76,20 @@
 
     function start() {
         // glow layer (tiny, upscaled + CSS-blurred) under the glyph layer
+        // glow is rendered offscreen at grid resolution and drawn into the one visible canvas.
+        // (No CSS filter or mix-blend-mode: on very wide screens Firefox renders blended
+        // full-screen layers through a size-capped surface and blurs the whole page.)
         const glowCanvas = document.createElement("canvas");
-        glowCanvas.className = "sim-glow";
         const canvas = document.createElement("canvas");
         canvas.className = "sim";
-        for (const c of [glowCanvas, canvas]) c.setAttribute("aria-hidden", "true");
-        document.body.prepend(glowCanvas, canvas);
+        canvas.setAttribute("aria-hidden", "true");
+        document.body.prepend(canvas);
         const ctx = canvas.getContext("2d");
         const gctx = glowCanvas.getContext("2d");
 
         let vw = 0, vh = 0, cw = 0, cols = 0, rows = 0, dpr = 1;
         let rects = [], palette = [], paletteRgb = [], boids = [];
-        let hidden = null, field = null, hx = null, hy = null, glowImg = null, gA = null, gB = null;
+        let clear = null, glowAlpha = 0.3, field = null, hx = null, hy = null, glowImg = null, gA = null, gB = null;
         // sprite atlas: every glyph pre-rendered once per palette colour at device resolution,
         // then blitted at whole-pixel positions (sharp on any DPR, and far cheaper than fillText)
         const atlas = document.createElement("canvas");
@@ -108,6 +111,7 @@
                 paletteRgb.push(rgb);
                 palette.push(`rgb(${rgb.join(",")})`);
             }
+            glowAlpha = parseFloat(cs.getPropertyValue("--sim-glow")) || 0.3;
             if (cw) buildAtlas();
         }
 
@@ -136,11 +140,21 @@
                 .map(el => el.getBoundingClientRect())
                 .filter(r => r.width && r.height && r.bottom > -200 && r.top < vh + 200)
                 .map(r => ({ l: r.left, t: r.top, r: r.right, b: r.bottom }));
-            hidden = new Uint8Array(cols * rows);
-            for (const r of rects) {
-                const x0 = Math.max(0, Math.floor((r.l - HIDE_PAD) / cw)), x1 = Math.min(cols - 1, Math.floor((r.r + HIDE_PAD) / cw));
-                const y0 = Math.max(0, Math.floor((r.t - HIDE_PAD) / LINE_PX)), y1 = Math.min(rows - 1, Math.floor((r.b + HIDE_PAD) / LINE_PX));
-                for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) hidden[y * cols + x] = 1;
+            // per-cell clearance 0..1 from the distance to the nearest text block. Distance to a
+            // rectangle is rounded at the corners, so the fade hugs the text in soft rounded shapes.
+            clear = new Float32Array(cols * rows);
+            for (let y = 0; y < rows; y++) {
+                const py = (y + 0.5) * LINE_PX;
+                for (let x = 0; x < cols; x++) {
+                    const px = (x + 0.5) * cw;
+                    let d = Infinity;
+                    for (const r of rects) {
+                        const dx = Math.max(r.l - px, 0, px - r.r), dy = Math.max(r.t - py, 0, py - r.b);
+                        const dd = dx * dx + dy * dy;
+                        if (dd < d) d = dd;
+                    }
+                    clear[y * cols + x] = smooth(CLEAR, CLEAR + FEATHER, Math.sqrt(d));
+                }
             }
         }
 
@@ -342,7 +356,7 @@
                 const x = Math.floor(b.x / cw), y = Math.floor(b.y / LINE_PX);
                 if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
                 const i = y * cols + x;
-                if (hidden[i] || heads.has(i)) continue;
+                if (clear[i] < 0.5 || heads.has(i)) continue;   // heads only where there's room
                 const ch = Math.abs(b.vx) >= Math.abs(b.vy) ? (b.vx > 0 ? HEADS.e : HEADS.w) : (b.vy > 0 ? HEADS.s : HEADS.n);
                 heads.set(i, HEAD_COL[ch] * 64 + headingIndex(b));
             }
@@ -350,8 +364,8 @@
             // cluster glyphs + glow source (premultiplied rgba, grid resolution)
             gA.fill(0);
             for (let i = 0; i < field.length; i++) {
-                const f = field[i];
-                if (f < FIELD_LO * 0.5 || hidden[i]) continue;
+                const f = field[i] * clear[i];                  // clusters thin out toward text
+                if (f < FIELD_LO * 0.5) continue;
                 const p = angleIndex(Math.atan2(hy[i], hx[i]));
                 const rgb = paletteRgb[p], a = smooth(GLOW_LO, GLOW_HI, f);
                 const j = i * 4;
@@ -360,7 +374,16 @@
                 const lvl = Math.round(smooth(FIELD_LO, FIELD_HI, f) * (RAMP.length - 1));
                 if (lvl > 0) blit(lvl - 1, p, i);
             }
+            // glow first (smoothly upscaled), then glyphs over it
+            const glyphs = ctx.globalCompositeOperation;
             blurGlow();
+            ctx.globalCompositeOperation = "destination-over";        // slide the glow underneath what's drawn
+            ctx.globalAlpha = glowAlpha;
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
+            ctx.drawImage(glowCanvas, 0, 0, cols * cw * dpr, rows * LINE_PX * dpr);
+            ctx.globalAlpha = 1;
+            ctx.globalCompositeOperation = glyphs;
 
             for (const [i, v] of heads) blit(Math.floor(v / 64), v % 64, i);
         }

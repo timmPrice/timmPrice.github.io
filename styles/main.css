@@ -7,6 +7,7 @@
     --sim-a: #E9C071;
     --sim-b: #4E8A4A;
     --sim-c: #458588;
+    --sim-glow: 0.3;               /* glow strength under clusters */
 }
 
 /* "light" theme is greyscale: mid-grey page, white accents */
@@ -18,6 +19,7 @@
     --sim-a: #1C1B19;              /* ink tones on newsprint */
     --sim-b: #4A4945;
     --sim-c: #8C8A84;
+    --sim-glow: 0.2;
 }
 
 /* white text on grey is hard to read, so links keep the text colour
@@ -90,27 +92,13 @@ body.index {
 }
 
 /* animated ASCII boids background, created by src/boids.js */
-canvas.sim,
-canvas.sim-glow {
+canvas.sim {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     z-index: -1;
     pointer-events: none;
-}
-
-/* cluster glow: a tiny density image, pre-blurred in JS and smoothly upscaled
- * (no CSS filter: blurring a full-screen layer every frame is costly on big displays).
- * screen = adds light on the dark theme, multiply = darkens like ink on newsprint */
-canvas.sim-glow {
-    opacity: 0.28;
-    mix-blend-mode: screen;
-}
-
-.light canvas.sim-glow {
-    opacity: 0.18;
-    mix-blend-mode: multiply;
 }
 
 @keyframes fadeInAnimation {
