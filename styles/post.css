@@ -14,13 +14,13 @@
 
 /* "light" theme is greyscale: mid-grey page, white accents */
 .light {
-    --bg-color: #9E9E9E;
+    --bg-color: #BDBAB3;          /* newsprint */
     --main-text-color: #121212;
     --secondary-text-color: #262626;
-    --muted-color: #333333;
-    --hl-color: #F5F5F5;
-    --border-color: #858585;
-    --code-bg: #8F8F8F;
+    --muted-color: #3A3936;
+    --hl-color: #F7F6F2;
+    --border-color: #9C9992;
+    --code-bg: #AEABA4;
 }
 
 /* links: text colour + white underline (white text on grey is unreadable) */

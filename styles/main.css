@@ -11,13 +11,13 @@
 
 /* "light" theme is greyscale: mid-grey page, white accents */
 .light {
-    --bg-color: #9E9E9E;
+    --bg-color: #BDBAB3;          /* newsprint */
     --main-text-color:  #121212;
     --secondary-text-color: #262626;
-    --hl-color: #F5F5F5;
+    --hl-color: #F7F6F2;
     --blob-a: #FFFFFF;
-    --blob-b: #5C5C5C;
-    --blob-c: #D4D4D4;
+    --blob-b: #4A4945;
+    --blob-c: #8C8A84;
 }
 
 /* white text on grey is hard to read, so links keep the text colour
@@ -30,7 +30,8 @@
     text-underline-offset: 3px;
 }
 
-.light img {
+.light img,
+.light .emoji {
     filter: grayscale(1);
 }
 

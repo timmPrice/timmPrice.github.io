@@ -3,6 +3,9 @@
 // the browser upscale it with pixelated sampling. Colours come from the --blob-*
 // and --bg-color CSS variables, so they follow the light/dark theme.
 (function () {
+    // opt-in only now: ?bg=blobs (the default background is src/plasma.js)
+    if (new URLSearchParams(location.search).get("bg") !== "blobs") return;
+
     const SCALE = 6;          // css px per canvas px: higher = chunkier
     const FPS = 24;
     const STRENGTH = 0.55;    // max mix of blob colour over the background
