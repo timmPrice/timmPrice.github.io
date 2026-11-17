@@ -472,7 +472,21 @@
         new MutationObserver(() => { readColors(); if (reduceMotion) still(); })
             .observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
-        if (reduceMotion) return;
+        // on/off (nav toggle): stopping cancels the loop and hides both layers, so it costs nothing
+        let stopped = false;
+        const controls = {
+            stop() {
+                stopped = true;
+                cancelAnimationFrame(raf);
+                canvas.style.display = glowCanvas.style.display = "none";
+            },
+            resume() {
+                stopped = false;
+                canvas.style.display = glowCanvas.style.display = "";
+                if (reduceMotion) still();
+                else { last = 0; raf = requestAnimationFrame(frame); }
+            },
+        };
 
         // adaptive frame rate: if frames get expensive (huge screens, slow machines), drop to 20 fps
         let last = 0, raf = 0, cost = 0, fps = FPS;
@@ -488,12 +502,34 @@
             fps = cost > 12 ? 20 : cost < 8 ? FPS : fps;
         }
         document.addEventListener("visibilitychange", () => {
+            if (stopped || reduceMotion) return;
             if (document.hidden) cancelAnimationFrame(raf);
             else { last = 0; raf = requestAnimationFrame(frame); }
         });
-        raf = requestAnimationFrame(frame);
+        if (!reduceMotion) raf = requestAnimationFrame(frame);
+        return controls;
     }
 
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
-    else start();
+    // nav button (#boids-toggle): remembered per browser; when off at load the sim never starts
+    const KEY = "boids";
+    function isOn() {
+        try { return localStorage.getItem(KEY) !== "off"; } catch (e) { return true; }
+    }
+    function boot() {
+        let sim = isOn() ? start() : null;
+        const button = document.getElementById("boids-toggle");
+        if (!button) return;
+        button.setAttribute("aria-pressed", String(!!sim));
+        button.addEventListener("click", () => {
+            const on = button.getAttribute("aria-pressed") !== "true";
+            button.setAttribute("aria-pressed", String(on));
+            try { localStorage.setItem(KEY, on ? "on" : "off"); } catch (e) { /* ignore */ }
+            if (!on) sim && sim.stop();
+            else if (sim) sim.resume();
+            else sim = start();
+        });
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
 })();

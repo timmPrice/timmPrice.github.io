@@ -182,7 +182,14 @@ nav ul .toggle {
     margin-left: auto;
 }
 
-nav ul #lm-toggle {
+/* background animation switched off: dim, no glow */
+nav ul #boids-toggle[aria-pressed="false"] {
+    opacity: 0.4;
+    text-shadow: none;
+}
+
+nav ul #lm-toggle,
+nav ul #boids-toggle {
     font: inherit;
     /* thin outline so the glyph stays crisp inside its glow */
     -webkit-text-stroke: 1px var(--bg-color);
