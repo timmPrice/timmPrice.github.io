@@ -7,6 +7,9 @@
     const FONT_PX = 14;               // glyph size
     const LINE_PX = 16;               // row height
     const FPS = 20;
+    const GLOW_RADIUS = 1.7;          // glow size relative to blob radius
+    const GLOW_ALPHA = 0.14;          // glow strength at the centre
+    const CORE_MIX = 0.7;             // how far the densest glyphs shift toward --blob-core
     const RAMP = " .:-=+*#%@";        // light -> heavy
     const CLEAR = 18;                 // css px of clear space around text
     const FEATHER = 40;               // css px fade beyond that
@@ -36,11 +39,22 @@
         const ctx = canvas.getContext("2d");
 
         let vw = 0, vh = 0, cols = 0, rows = 0, cw = 0, scale = 1;
-        let mask = null, colors = [];
+        let mask = null, colors = [], core = [255, 255, 255];
+
+        function parseColor(str) {
+            const s = str.trim();
+            if (s.startsWith("#")) {
+                const h = s.length === 4 ? s.slice(1).split("").map(c => c + c).join("") : s.slice(1, 7);
+                return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+            }
+            const m = s.match(/[\d.]+/g);
+            return m ? m.slice(0, 3).map(Number) : [255, 255, 255];
+        }
 
         function readColors() {
             const cs = getComputedStyle(document.documentElement);
-            colors = ["--blob-a", "--blob-b", "--blob-c"].map(v => cs.getPropertyValue(v).trim());
+            colors = ["--blob-a", "--blob-b", "--blob-c"].map(v => parseColor(cs.getPropertyValue(v)));
+            core = parseColor(cs.getPropertyValue("--blob-core") || "#ffffff");
         }
 
         function buildMask() {
@@ -78,7 +92,7 @@
             cw = ctx.measureText("M").width || FONT_PX * 0.6;
             cols = Math.ceil(vw / cw);
             rows = Math.ceil(vh / LINE_PX);
-            scale = 0.75 * Math.min(1, Math.max(0.55, Math.min(vw, vh) / 800));
+            scale = 1.15 * Math.min(1, Math.max(0.65, Math.min(vw, vh) / 800));
             buildMask();
         }
 
@@ -91,7 +105,18 @@
                 c: b.c,
             }));
 
-            // bucket glyphs by colour + ramp level so fillStyle changes stay few
+            // soft radial glow under each blob
+            for (const p of pos) {
+                const r = Math.sqrt(p.r2) * GLOW_RADIUS;
+                const c = colors[p.c];
+                const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+                g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${GLOW_ALPHA})`);
+                g.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0)`);
+                ctx.fillStyle = g;
+                ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+            }
+
+            // bucket glyphs by (quantised) colour + ramp level so fillStyle changes stay few
             const buckets = new Map();
             for (let y = 0; y < rows; y++) {
                 const py = (y + 0.5) * LINE_PX;
@@ -99,26 +124,32 @@
                     const m = mask[y * cols + x];
                     if (m <= 0.02) continue;
                     const px = (x + 0.5) * cw;
-                    let f = 0, best = 0, bestC = 0;
+                    let f = 0, r = 0, g = 0, b = 0;
                     for (const p of pos) {
                         const dx = px - p.x, dy = py - p.y;
                         const v = p.r2 / (dx * dx + dy * dy + 1);
-                        f += v;
-                        if (v > best) { best = v; bestC = p.c; }
+                        const c = colors[p.c];
+                        f += v; r += c[0] * v; g += c[1] * v; b += c[2] * v;
                     }
                     // metaball edge ~1: fade in from 0.4, only the very core reaches the heaviest glyph
                     const a = smooth(0.4, 6, f) * m;
                     const lvl = Math.round(a * (RAMP.length - 1));
                     if (lvl <= 0) continue;
-                    const key = bestC * 16 + lvl;
+                    // gradient: blend of nearby blob colours, heating toward --blob-core
+                    const heat = CORE_MIX * a * a;
+                    r = r / f + (core[0] - r / f) * heat;
+                    g = g / f + (core[1] - g / f) * heat;
+                    b = b / f + (core[2] - b / f) * heat;
+                    const q = v => Math.min(255, Math.round(v / 16) * 16);
+                    const key = ((q(r) << 16) | (q(g) << 8) | q(b)) * 16 + lvl;
                     let list = buckets.get(key);
                     if (!list) buckets.set(key, list = []);
                     list.push(x, y);
                 }
             }
             for (const [key, list] of buckets) {
-                const c = key >> 4, lvl = key & 15;
-                ctx.fillStyle = colors[c];
+                const rgb = Math.floor(key / 16), lvl = key % 16;
+                ctx.fillStyle = `rgb(${(rgb >> 16) & 255},${(rgb >> 8) & 255},${rgb & 255})`;
                 ctx.globalAlpha = 0.25 + 0.75 * (lvl / (RAMP.length - 1));
                 const ch = RAMP[lvl];
                 for (let i = 0; i < list.length; i += 2) ctx.fillText(ch, list[i] * cw, list[i + 1] * LINE_PX);
