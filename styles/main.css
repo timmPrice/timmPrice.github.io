@@ -100,10 +100,10 @@ canvas.sim-glow {
     pointer-events: none;
 }
 
-/* cluster glow: a tiny density image, upscaled and blurred.
+/* cluster glow: a tiny density image, pre-blurred in JS and smoothly upscaled
+ * (no CSS filter: blurring a full-screen layer every frame is costly on big displays).
  * screen = adds light on the dark theme, multiply = darkens like ink on newsprint */
 canvas.sim-glow {
-    filter: blur(22px);
     opacity: 0.28;
     mix-blend-mode: screen;
 }

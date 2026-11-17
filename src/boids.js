@@ -16,6 +16,7 @@
     const FIELD_LO = 0.35, FIELD_HI = 6; // density where glyphs start / reach the heaviest
     const GLOW_LO = 1.2, GLOW_HI = 7;    // density where the glow starts / saturates (clusters only)
     const PALETTE_STEPS = 24;            // colour gradient resolution around the compass
+    const GLOW_BLUR = 2;                 // glow blur radius in grid cells (done on the tiny image, not with CSS)
 
     // --- flock ---
     const FPS = 30;
@@ -63,7 +64,14 @@
 
         let vw = 0, vh = 0, cw = 0, cols = 0, rows = 0, dpr = 1;
         let rects = [], palette = [], paletteRgb = [], boids = [];
-        let hidden = null, field = null, fr = null, fg = null, fb = null, glowImg = null;
+        let hidden = null, field = null, hx = null, hy = null, glowImg = null, gA = null, gB = null;
+        // sprite atlas: every glyph pre-rendered once per palette colour at device resolution,
+        // then blitted at whole-pixel positions (sharp on any DPR, and far cheaper than fillText)
+        const atlas = document.createElement("canvas");
+        const actx = atlas.getContext("2d");
+        let cellW = 0, cellH = 0;
+        const GLYPHS = RAMP.slice(1) + HEADS.e + HEADS.w + HEADS.n + HEADS.s;   // atlas columns
+        const HEAD_COL = { [HEADS.e]: RAMP.length - 1, [HEADS.w]: RAMP.length, [HEADS.n]: RAMP.length + 1, [HEADS.s]: RAMP.length + 2 };
         const cursor = { x: -1e4, y: -1e4 };
 
         // palette: a loop a -> b -> c -> a, indexed by heading
@@ -78,6 +86,27 @@
                 paletteRgb.push(rgb);
                 palette.push(`rgb(${rgb.join(",")})`);
             }
+            if (cw) buildAtlas();
+        }
+
+        function buildAtlas() {
+            cellW = Math.ceil(cw * dpr);
+            cellH = Math.ceil(LINE_PX * dpr);
+            atlas.width = cellW * GLYPHS.length;
+            atlas.height = cellH * PALETTE_STEPS;
+            actx.clearRect(0, 0, atlas.width, atlas.height);
+            actx.font = `${Math.round(FONT_PX * dpr)}px "JetBrains Mono", monospace`;
+            actx.textBaseline = "top";
+            for (let p = 0; p < PALETTE_STEPS; p++) {
+                actx.fillStyle = palette[p];
+                for (let g = 0; g < GLYPHS.length; g++) {
+                    const isRamp = g < RAMP.length - 1;
+                    // ramp glyphs fade with density; heads are solid
+                    actx.globalAlpha = isRamp ? 0.2 + 0.5 * ((g + 1) / (RAMP.length - 1)) : 1;
+                    actx.fillText(GLYPHS[g], g * cellW, p * cellH);
+                }
+            }
+            actx.globalAlpha = 1;
         }
 
         function readObstacles() {
@@ -105,19 +134,23 @@
             dpr = window.devicePixelRatio || 1;
             vw = window.innerWidth;
             vh = window.innerHeight;
-            canvas.width = Math.round(vw * dpr);
-            canvas.height = Math.round(vh * dpr);
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            // size the backing store in whole device pixels and the element to match exactly,
+            // so the browser never resamples it (that rescale is what blurs on fractional DPR)
+            canvas.width = Math.floor(vw * dpr);
+            canvas.height = Math.floor(vh * dpr);
+            canvas.style.width = canvas.width / dpr + "px";
+            canvas.style.height = canvas.height / dpr + "px";
             ctx.font = `${FONT_PX}px "JetBrains Mono", monospace`;
-            ctx.textBaseline = "top";
             cw = ctx.measureText("M").width || FONT_PX * 0.6;
             cols = Math.ceil(vw / cw);
             rows = Math.ceil(vh / LINE_PX);
             glowCanvas.width = cols;
             glowCanvas.height = rows;
             glowImg = gctx.createImageData(cols, rows);
+            gA = new Float32Array(cols * rows * 4); gB = new Float32Array(cols * rows * 4);
             field = new Float32Array(cols * rows);
-            fr = new Float32Array(cols * rows); fg = new Float32Array(cols * rows); fb = new Float32Array(cols * rows);
+            hx = new Float32Array(cols * rows); hy = new Float32Array(cols * rows);
+            buildAtlas();
             readObstacles();
             spawn(Math.round(Math.min(MAX_BOIDS, Math.max(MIN_BOIDS, vw * vh * DENSITY))));
         }
@@ -189,17 +222,19 @@
             }
         }
 
-        const headingIndex = b => {
-            const a = (Math.atan2(b.vy, b.vx) + Math.PI * 2) % (Math.PI * 2);
-            return Math.floor(a / (Math.PI * 2) * PALETTE_STEPS) % PALETTE_STEPS;
+        const angleIndex = a => {
+            const t = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+            return Math.floor(t / (Math.PI * 2) * PALETTE_STEPS) % PALETTE_STEPS;
         };
+        const headingIndex = b => angleIndex(Math.atan2(b.vy, b.vx));
 
-        // splat every boid into the density field (with its heading colour)
+        // splat every boid into the density field, plus its heading as a unit vector
+        // (the cell colour is the circular mean heading of the boids around it)
         function buildField() {
-            field.fill(0); fr.fill(0); fg.fill(0); fb.fill(0);
+            field.fill(0); hx.fill(0); hy.fill(0);
             const rx = Math.ceil(SPLAT_R / cw), ry = Math.ceil(SPLAT_R / LINE_PX), R2 = SPLAT_R * SPLAT_R;
             for (const b of boids) {
-                const col = paletteRgb[headingIndex(b)];
+                const sp = Math.hypot(b.vx, b.vy) || 1, ux = b.vx / sp, uy = b.vy / sp;
                 const bx = Math.floor(b.x / cw), by = Math.floor(b.y / LINE_PX);
                 for (let oy = -ry; oy <= ry; oy++) {
                     const y = by + oy;
@@ -211,15 +246,52 @@
                         const dx = (x + 0.5) * cw - b.x, d2 = dx * dx + dy * dy;
                         if (d2 >= R2) continue;
                         const k = (1 - d2 / R2) ** 2, i = y * cols + x;
-                        field[i] += k; fr[i] += col[0] * k; fg[i] += col[1] * k; fb[i] += col[2] * k;
+                        field[i] += k; hx[i] += ux * k; hy[i] += uy * k;
                     }
                 }
             }
         }
 
+        // separable box blur (x then y, twice ~ gaussian) on the tiny glow image, then
+        // un-premultiply into the ImageData. The browser's smooth upscale finishes the softening.
+        function blurGlow() {
+            const R = GLOW_BLUR, n = 2 * R + 1;
+            // running-sum box blur along rows (step 4) or columns (step cols*4)
+            const pass = (src, dst, horizontal) => {
+                const len = horizontal ? cols : rows, lines = horizontal ? rows : cols;
+                const step = horizontal ? 4 : cols * 4;
+                for (let l = 0; l < lines; l++) {
+                    const line = horizontal ? l * cols * 4 : l * 4;
+                    for (let c = 0; c < 4; c++) {
+                        const base = line + c;
+                        let acc = 0;
+                        for (let k = 0; k <= R && k < len; k++) acc += src[base + k * step];
+                        for (let k = 0, o = base; k < len; k++, o += step) {
+                            dst[o] = acc / n;
+                            if (k - R >= 0) acc -= src[o - R * step];
+                            if (k + R + 1 < len) acc += src[o + (R + 1) * step];
+                        }
+                    }
+                }
+            };
+            pass(gA, gB, true); pass(gB, gA, false);
+            pass(gA, gB, true); pass(gB, gA, false);
+            const g = glowImg.data;
+            for (let j = 0; j < gA.length; j += 4) {
+                const a = gA[j + 3];
+                if (a < 0.004) { g[j + 3] = 0; continue; }
+                g[j] = gA[j] / a; g[j + 1] = gA[j + 1] / a; g[j + 2] = gA[j + 2] / a; g[j + 3] = Math.min(255, a * 255);
+            }
+            gctx.putImageData(glowImg, 0, 0);
+        }
+
+        const blit = (g, p, i) => ctx.drawImage(
+            atlas, g * cellW, p * cellH, cellW, cellH,
+            Math.round((i % cols) * cw * dpr), Math.round(Math.floor(i / cols) * LINE_PX * dpr), cellW, cellH);
+
         function draw() {
             buildField();
-            ctx.clearRect(0, 0, vw, vh);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // boids claim their grid cell; the cluster glyph there is replaced, not overdrawn
             const heads = new Map();
@@ -229,44 +301,25 @@
                 const i = y * cols + x;
                 if (hidden[i] || heads.has(i)) continue;
                 const ch = Math.abs(b.vx) >= Math.abs(b.vy) ? (b.vx > 0 ? HEADS.e : HEADS.w) : (b.vy > 0 ? HEADS.s : HEADS.n);
-                heads.set(i, [ch, palette[headingIndex(b)]]);
+                heads.set(i, HEAD_COL[ch] * 64 + headingIndex(b));
             }
 
-            // glow layer + cluster glyphs (bucketed by quantised colour + level)
-            const g = glowImg.data;
-            const buckets = new Map();
+            // cluster glyphs + glow source (premultiplied rgba, grid resolution)
+            gA.fill(0);
             for (let i = 0; i < field.length; i++) {
                 const f = field[i];
-                if (f < FIELD_LO * 0.5 || hidden[i]) { g[i * 4 + 3] = 0; continue; }
-                const r = fr[i] / f, gg = fg[i] / f, b = fb[i] / f;
-                g[i * 4] = r; g[i * 4 + 1] = gg; g[i * 4 + 2] = b;
-                g[i * 4 + 3] = 255 * smooth(GLOW_LO, GLOW_HI, f);
-
+                if (f < FIELD_LO * 0.5 || hidden[i]) continue;
+                const p = angleIndex(Math.atan2(hy[i], hx[i]));
+                const rgb = paletteRgb[p], a = smooth(GLOW_LO, GLOW_HI, f);
+                const j = i * 4;
+                gA[j] = rgb[0] * a; gA[j + 1] = rgb[1] * a; gA[j + 2] = rgb[2] * a; gA[j + 3] = a;
                 if (heads.has(i)) continue;
                 const lvl = Math.round(smooth(FIELD_LO, FIELD_HI, f) * (RAMP.length - 1));
-                if (lvl <= 0) continue;
-                const q = v => Math.min(255, Math.round(v / 16) * 16);
-                const key = ((q(r) << 16) | (q(gg) << 8) | q(b)) * 16 + lvl;
-                let list = buckets.get(key);
-                if (!list) buckets.set(key, list = []);
-                list.push(i);
+                if (lvl > 0) blit(lvl - 1, p, i);
             }
-            gctx.putImageData(glowImg, 0, 0);
+            blurGlow();
 
-            for (const [key, list] of buckets) {
-                const rgb = Math.floor(key / 16), lvl = key % 16;
-                ctx.fillStyle = `rgb(${(rgb >> 16) & 255},${(rgb >> 8) & 255},${rgb & 255})`;
-                ctx.globalAlpha = 0.2 + 0.5 * (lvl / (RAMP.length - 1));
-                const ch = RAMP[lvl];
-                for (const i of list) ctx.fillText(ch, (i % cols) * cw, Math.floor(i / cols) * LINE_PX);
-            }
-
-            // boid heads, in their own grid cells
-            ctx.globalAlpha = 1;
-            for (const [i, [ch, col]] of heads) {
-                ctx.fillStyle = col;
-                ctx.fillText(ch, (i % cols) * cw, Math.floor(i / cols) * LINE_PX);
-            }
+            for (const [i, v] of heads) blit(Math.floor(v / 64), v % 64, i);
         }
 
         function warmUp(seconds) {
