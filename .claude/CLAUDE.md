@@ -15,6 +15,12 @@ Static personal site. No build step — plain HTML/CSS/JS.
   copy its `main.js` into `obsidian-plugin/export-to-html-custom/`. Never hand-patch the built file.
 
 ## Writing / exporting
+- `~/obs-notes` is the user's Obsidian vault (it has its own `CLAUDE.md`). It's the place to
+  look for article sources/research notes, e.g. homelab material in `System/Shinkansen-Homelab/`
+  and `System/Proxmox/`. The homelab code repo is `~/repos/homelab` (GitHub: Shinkansen-Homelab).
+  The vault's CLAUDE.md says never edit `post/`. Only touch a draft when asked, and then as review
+  notes: an `_italic_` "Correction:" paragraph under each paragraph, and small fixes inline as
+  `**change: …**` next to the original text (leave the original in place for the user to resolve).
 - Source notes live in `~/obs-notes/post/` and are named `<name>.html.md`, so the plugin's
   download (note basename) comes out as `<name>.html`.
 - Template: `~/obs-notes/post/_post-template.md`.
