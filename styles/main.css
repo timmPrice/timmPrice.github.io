@@ -3,7 +3,10 @@
     --main-text-color:  #E5E7EB;
     --secondary-text-color: #D1D5DB;
     --hl-color: #E9C071;
-    --bg-image: url("../asset/short_gradient.png")
+    /* energy blob colours (src/blobs.js) */
+    --blob-a: #E9C071;
+    --blob-b: #4E8A4A;
+    --blob-c: #458588;
 }
 
 .light {
@@ -11,7 +14,9 @@
     --main-text-color:  #414B5A;
     --secondary-text-color: #525E6D;
     --hl-color: #458588;
-    --bg-image: url("../asset/short_gradient_lm.png")
+    --blob-a: #458588;
+    --blob-b: #D79921;
+    --blob-c: #98971A;
 }
 
 h1, h2, h3{
@@ -61,11 +66,18 @@ body {
 }
 
 body.index {
-    background-image: var(--bg-image);
-    background-repeat: no-repeat, no-repeat;
-    background-size: cover, cover;
-    background-position: center, center;
     transition: background 0.3s, color 0.3s;
+}
+
+/* animated low-res background, created by src/blobs.js */
+canvas.blobs {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    image-rendering: pixelated;
 }
 
 @keyframes fadeInAnimation {
