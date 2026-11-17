@@ -9,14 +9,33 @@
     --blob-c: #458588;
 }
 
+/* "light" theme is greyscale: mid-grey page, white accents */
 .light {
-    --bg-color: #E5E7EB;
-    --main-text-color:  #414B5A;
-    --secondary-text-color: #525E6D;
-    --hl-color: #458588;
-    --blob-a: #458588;
-    --blob-b: #D79921;
-    --blob-c: #98971A;
+    --bg-color: #9E9E9E;
+    --main-text-color:  #121212;
+    --secondary-text-color: #262626;
+    --hl-color: #F5F5F5;
+    --blob-a: #FFFFFF;
+    --blob-b: #5C5C5C;
+    --blob-c: #D4D4D4;
+}
+
+/* white text on grey is hard to read, so links keep the text colour
+ * and get a white underline instead */
+.light main a.link {
+    color: var(--main-text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--hl-color);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.light img {
+    filter: grayscale(1);
+}
+
+img {
+    transition: filter 0.3s;
 }
 
 h1, h2, h3{

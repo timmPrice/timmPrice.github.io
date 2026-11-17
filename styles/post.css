@@ -12,14 +12,28 @@
     --code-bg: #1A1A1A;
 }
 
+/* "light" theme is greyscale: mid-grey page, white accents */
 .light {
-    --bg-color: #E5E7EB;
-    --main-text-color: #414B5A;
-    --secondary-text-color: #525E6D;
-    --muted-color: #6B7280;
-    --hl-color: #458588;
-    --border-color: #D1D5DB;
-    --code-bg: #D9DCE1;
+    --bg-color: #9E9E9E;
+    --main-text-color: #121212;
+    --secondary-text-color: #262626;
+    --muted-color: #333333;
+    --hl-color: #F5F5F5;
+    --border-color: #858585;
+    --code-bg: #8F8F8F;
+}
+
+/* links: text colour + white underline (white text on grey is unreadable) */
+.light body.markdown-body a {
+    color: var(--main-text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--hl-color);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.light body.markdown-body img {
+    filter: grayscale(1);
 }
 
 html {
