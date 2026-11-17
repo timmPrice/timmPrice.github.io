@@ -8,7 +8,8 @@
     // --- look ---
     const FONT_PX = 17;
     const LINE_PX = 20;
-    const HEADS = "→↘↓↙←↖↑↗";            // glyph per heading octant (0 = east, clockwise)
+    const HEAD = "→";                     // one glyph, rotated to the exact heading (uniform size)
+    const HEAD_SCALE = 1.25;              // heads a touch larger than trail glyphs
     const TRAIL = " .·:";                // trail ramp, faint -> fresh
     const TRAIL_DECAY = 0.93;            // per frame: higher = longer trails
     const PALETTE_STEPS = 24;            // colour gradient resolution around the compass
@@ -47,7 +48,7 @@
         document.body.prepend(canvas);
         const ctx = canvas.getContext("2d");
 
-        let vw = 0, vh = 0, cw = 0, cols = 0, rows = 0;
+        let vw = 0, vh = 0, cw = 0, cols = 0, rows = 0, dpr = 1;
         let rects = [], palette = [], boids = [];
         let trail = null, trailCol = null, hidden = null;
         const cursor = { x: -1e4, y: -1e4 };
@@ -87,7 +88,7 @@
         }
 
         function resize() {
-            const dpr = window.devicePixelRatio || 1;
+            dpr = window.devicePixelRatio || 1;
             vw = window.innerWidth;
             vh = window.innerHeight;
             canvas.width = Math.round(vw * dpr);
@@ -178,7 +179,7 @@
                 const i = y * cols + x, a = heading(b);
                 trail[i] = 1;
                 trailCol[i] = Math.floor(a / (Math.PI * 2) * PALETTE_STEPS) % PALETTE_STEPS;
-                if (!hidden[i]) heads.push(x, y, Math.round(a / (Math.PI / 4)) % 8, trailCol[i]);
+                if (!hidden[i]) heads.push(x, y, a, trailCol[i]);
             }
 
             // trails, bucketed by colour + level
@@ -200,12 +201,21 @@
                 for (const i of list) ctx.fillText(ch, (i % cols) * cw, Math.floor(i / cols) * LINE_PX);
             }
 
-            // heads on top
+            // heads on top: the same glyph rotated about its cell centre
             ctx.globalAlpha = 0.9;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = `${Math.round(FONT_PX * HEAD_SCALE)}px "JetBrains Mono", monospace`;
             for (let i = 0; i < heads.length; i += 4) {
+                const a = heads[i + 2], c = Math.cos(a) * dpr, s = Math.sin(a) * dpr;
+                ctx.setTransform(c, s, -s, c, (heads[i] + 0.5) * cw * dpr, (heads[i + 1] + 0.5) * LINE_PX * dpr);
                 ctx.fillStyle = palette[heads[i + 3]];
-                ctx.fillText(HEADS[heads[i + 2]], heads[i] * cw, heads[i + 1] * LINE_PX);
+                ctx.fillText(HEAD, 0, 0);
             }
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.font = `${FONT_PX}px "JetBrains Mono", monospace`;
+            ctx.textAlign = "start";
+            ctx.textBaseline = "top";
             ctx.globalAlpha = 1;
         }
 
