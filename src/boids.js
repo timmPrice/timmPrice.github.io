@@ -13,8 +13,8 @@
     const S_MIN = 0.55, S_MAX = 3;
 
     // --- look (base values at S = 1) ---
-    const BASE_FONT_PX = 17;             // glyph size grows with sqrt(S), so the ASCII stays fine-grained
-    const FONT_MIN = 12, FONT_MAX = 28;
+    const FONT_PX = 17;                  // fixed: bigger screens get more characters, not bigger ones
+    const LINE_PX = 20;
     const HEADS = { e: ">", w: "<", n: "^", s: "v" };   // boid glyph by dominant direction
     const RAMP = " .:-=+*#%@";           // cluster density, light -> heavy
     const BASE_SPLAT_R = 130;            // css px each boid contributes density within (blob size)
@@ -44,14 +44,12 @@
     const BASE_CURSOR_R = 110, CURSOR_W = 6;
 
     // scaled values, recomputed on resize
-    let S = 1, FONT_PX = BASE_FONT_PX, LINE_PX = 20, SPLAT_R = BASE_SPLAT_R;
+    let S = 1, SPLAT_R = BASE_SPLAT_R;
     let MIN_SPEED = BASE_SPEED[0], MAX_SPEED = BASE_SPEED[1], MAX_FORCE = BASE_MAX_FORCE;
     let SEP_R = BASE_SEP_R, ALIGN_R = BASE_ALIGN_R, COH_R = BASE_COH_R, CURSOR_R = BASE_CURSOR_R;
 
     function applyScale(w, h) {
         S = Math.min(S_MAX, Math.max(S_MIN, Math.sqrt(w * h) / 1000));
-        FONT_PX = Math.round(Math.min(FONT_MAX, Math.max(FONT_MIN, BASE_FONT_PX * Math.sqrt(S))));
-        LINE_PX = Math.round(FONT_PX * 1.18);
         SPLAT_R = BASE_SPLAT_R * S;
         MIN_SPEED = BASE_SPEED[0] * S; MAX_SPEED = BASE_SPEED[1] * S;
         MAX_FORCE = BASE_MAX_FORCE * S;
@@ -75,21 +73,22 @@
     };
 
     function start() {
-        // glow layer (tiny, upscaled + CSS-blurred) under the glyph layer
-        // glow is rendered offscreen at grid resolution and drawn into the one visible canvas.
-        // (No CSS filter or mix-blend-mode: on very wide screens Firefox renders blended
-        // full-screen layers through a size-capped surface and blurs the whole page.)
+        // Two layers: a tiny glow canvas (one pixel per grid cell) that the compositor stretches to
+        // full screen on the GPU, and the glyph canvas on top. Plain compositing only: no CSS
+        // filter or mix-blend-mode (on very wide screens Firefox renders blended full-screen
+        // layers through a size-capped surface and blurs the whole page).
         const glowCanvas = document.createElement("canvas");
+        glowCanvas.className = "sim-glow";
         const canvas = document.createElement("canvas");
         canvas.className = "sim";
-        canvas.setAttribute("aria-hidden", "true");
-        document.body.prepend(canvas);
+        for (const c of [glowCanvas, canvas]) c.setAttribute("aria-hidden", "true");
+        document.body.prepend(glowCanvas, canvas);
         const ctx = canvas.getContext("2d");
         const gctx = glowCanvas.getContext("2d");
 
         let vw = 0, vh = 0, cw = 0, cols = 0, rows = 0, dpr = 1;
         let rects = [], palette = [], paletteRgb = [], boids = [];
-        let clear = null, glowAlpha = 0.3, field = null, hx = null, hy = null, glowImg = null, gA = null, gB = null;
+        let clear = null, field = null, hx = null, hy = null, glowImg = null, gA = null, gB = null;
         // sprite atlas: every glyph pre-rendered once per palette colour at device resolution,
         // then blitted at whole-pixel positions (sharp on any DPR, and far cheaper than fillText)
         const atlas = document.createElement("canvas");
@@ -98,6 +97,9 @@
         const GLYPHS = RAMP.slice(1) + HEADS.e + HEADS.w + HEADS.n + HEADS.s;   // atlas columns
         const HEAD_COL = { [HEADS.e]: RAMP.length - 1, [HEADS.w]: RAMP.length, [HEADS.n]: RAMP.length + 1, [HEADS.s]: RAMP.length + 2 };
         const cursor = { x: -1e4, y: -1e4 };
+        // what each cell currently shows (sprite key + 1, 0 = empty, -1 = unknown): only cells
+        // whose sprite changes get cleared and redrawn each frame
+        let shown = null, want = null;
 
         // palette: a loop a -> b -> c -> a, indexed by heading
         function readColors() {
@@ -111,7 +113,6 @@
                 paletteRgb.push(rgb);
                 palette.push(`rgb(${rgb.join(",")})`);
             }
-            glowAlpha = parseFloat(cs.getPropertyValue("--sim-glow")) || 0.3;
             if (cw) buildAtlas();
         }
 
@@ -133,6 +134,7 @@
                 }
             }
             actx.globalAlpha = 1;
+            if (shown) { shown.fill(-1); ctx.clearRect(0, 0, canvas.width, canvas.height); }   // colours changed: repaint all
         }
 
         function readObstacles() {
@@ -205,6 +207,7 @@
             gA = new Float32Array(cols * rows * 4); gB = new Float32Array(cols * rows * 4);
             field = new Float32Array(cols * rows);
             hx = new Float32Array(cols * rows); hy = new Float32Array(cols * rows);
+            shown = new Int32Array(cols * rows).fill(-1); want = new Int32Array(cols * rows);
             buildAtlas();
             readObstacles();
             const perFlock = Math.round(PER_FLOCK_BASE + PER_FLOCK_PER_S * S);
@@ -342,50 +345,51 @@
             gctx.putImageData(glowImg, 0, 0);
         }
 
-        const blit = (g, p, i) => ctx.drawImage(
-            atlas, g * cellW, p * cellH, cellW, cellH,
-            Math.round((i % cols) * cw * dpr), Math.round(Math.floor(i / cols) * LINE_PX * dpr), cellW, cellH);
+        // cell -> device-pixel rectangle (whole pixels, so neighbours tile exactly)
+        const cellX = x => Math.round(x * cw * dpr), cellY = y => Math.round(y * LINE_PX * dpr);
 
         function draw() {
             buildField();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            want.fill(0);
 
             // boids claim their grid cell; the cluster glyph there is replaced, not overdrawn
-            const heads = new Map();
             for (const b of boids) {
                 const x = Math.floor(b.x / cw), y = Math.floor(b.y / LINE_PX);
                 if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
                 const i = y * cols + x;
-                if (clear[i] < 0.5 || heads.has(i)) continue;   // heads only where there's room
+                if (clear[i] < 0.5 || want[i]) continue;          // heads only where there's room
                 const ch = Math.abs(b.vx) >= Math.abs(b.vy) ? (b.vx > 0 ? HEADS.e : HEADS.w) : (b.vy > 0 ? HEADS.s : HEADS.n);
-                heads.set(i, HEAD_COL[ch] * 64 + headingIndex(b));
+                want[i] = (HEAD_COL[ch] * PALETTE_STEPS + headingIndex(b)) + 1;
             }
 
             // cluster glyphs + glow source (premultiplied rgba, grid resolution)
             gA.fill(0);
             for (let i = 0; i < field.length; i++) {
-                const f = field[i] * clear[i];                  // clusters thin out toward text
+                const f = field[i] * clear[i];                    // clusters thin out toward text
                 if (f < FIELD_LO * 0.5) continue;
                 const p = angleIndex(Math.atan2(hy[i], hx[i]));
                 const rgb = paletteRgb[p], a = smooth(GLOW_LO, GLOW_HI, f);
                 const j = i * 4;
                 gA[j] = rgb[0] * a; gA[j + 1] = rgb[1] * a; gA[j + 2] = rgb[2] * a; gA[j + 3] = a;
-                if (heads.has(i)) continue;
+                if (want[i]) continue;
                 const lvl = Math.round(smooth(FIELD_LO, FIELD_HI, f) * (RAMP.length - 1));
-                if (lvl > 0) blit(lvl - 1, p, i);
+                if (lvl > 0) want[i] = ((lvl - 1) * PALETTE_STEPS + p) + 1;
             }
-            // glow first (smoothly upscaled), then glyphs over it
-            const glyphs = ctx.globalCompositeOperation;
             blurGlow();
-            ctx.globalCompositeOperation = "destination-over";        // slide the glow underneath what's drawn
-            ctx.globalAlpha = glowAlpha;
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.drawImage(glowCanvas, 0, 0, cols * cw * dpr, rows * LINE_PX * dpr);
-            ctx.globalAlpha = 1;
-            ctx.globalCompositeOperation = glyphs;
 
-            for (const [i, v] of heads) blit(Math.floor(v / 64), v % 64, i);
+            // repaint only the cells whose sprite changed
+            for (let i = 0; i < want.length; i++) {
+                const k = want[i];
+                if (k === shown[i]) continue;
+                const x = i % cols, y = (i - x) / cols;
+                const x0 = cellX(x), y0 = cellY(y), w = cellX(x + 1) - x0, h = cellY(y + 1) - y0;
+                if (shown[i] !== 0) ctx.clearRect(x0, y0, w, h);
+                if (k) {
+                    const g = Math.floor((k - 1) / PALETTE_STEPS), p = (k - 1) % PALETTE_STEPS;
+                    ctx.drawImage(atlas, g * cellW, p * cellH, w, h, x0, y0, w, h);
+                }
+                shown[i] = k;
+            }
         }
 
         function warmUp(seconds) {
@@ -413,14 +417,18 @@
 
         if (reduceMotion) return;
 
-        let last = 0, raf = 0;
+        // adaptive frame rate: if frames get expensive (huge screens, slow machines), drop to 20 fps
+        let last = 0, raf = 0, cost = 0, fps = FPS;
         function frame(ts) {
             raf = requestAnimationFrame(frame);
-            if (ts - last < 1000 / FPS) return;
-            const dt = Math.min(0.05, last ? (ts - last) / 1000 : 1 / FPS);
+            if (ts - last < 1000 / fps - 2) return;
+            const dt = Math.min(0.05, last ? (ts - last) / 1000 : 1 / fps);
             last = ts;
+            const t0 = performance.now();
             step(dt);
             draw();
+            cost = cost * 0.9 + (performance.now() - t0) * 0.1;
+            fps = cost > 12 ? 20 : cost < 8 ? FPS : fps;
         }
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) cancelAnimationFrame(raf);
