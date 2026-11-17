@@ -12,8 +12,8 @@
     const LINE_PX = 20;
     const HEADS = { e: ">", w: "<", n: "^", s: "v" };   // boid glyph by dominant direction
     const RAMP = " .:-=+*#%@";           // cluster density, light -> heavy
-    const SPLAT_R = 70;                  // css px each boid contributes density within
-    const FIELD_LO = 0.35, FIELD_HI = 5; // density where glyphs start / reach the heaviest
+    const SPLAT_R = 105;                 // css px each boid contributes density within (blob size)
+    const FIELD_LO = 0.35, FIELD_HI = 6; // density where glyphs start / reach the heaviest
     const GLOW_LO = 1.2, GLOW_HI = 7;    // density where the glow starts / saturates (clusters only)
     const PALETTE_STEPS = 24;            // colour gradient resolution around the compass
 
@@ -25,6 +25,7 @@
     const SEP_R = 28, ALIGN_R = 90, COH_R = 150;
     const SEP_W = 1.6, ALIGN_W = 1.0, COH_W = 1.1;
     const MAX_FORCE = 150;               // css px / s^2
+    const CENTER_W = 0.25;               // gentle pull toward the middle of the screen (0 = off)
     const WARMUP_S = 15;                 // simulate this long before the first frame
 
     // --- obstacles ---
@@ -151,6 +152,13 @@
                 if (sx || sy) steer(sx, sy, SEP_W);
                 if (na) steer(ax / na, ay / na, ALIGN_W);
                 if (nc) steer(cx / nc, cy / nc, COH_W);
+
+                // slow drift toward the screen centre, stronger the further out a boid is
+                {
+                    const dx = vw / 2 - b.x, dy = vh / 2 - b.y;
+                    const k = Math.min(1, Math.hypot(dx / (vw / 2), dy / (vh / 2)));
+                    if (k > 0.05) steer(dx, dy, CENTER_W * k);
+                }
 
                 // obstacles: push away from the nearest point of each nearby text block
                 for (const r of rects) {
