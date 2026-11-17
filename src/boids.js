@@ -1,6 +1,6 @@
 // ASCII boids background for the home page.
-// Reynolds flocking (separation / alignment / cohesion). Each boid is a small
-// multi-character ASCII arrow rotated to its heading. Every boid also splats into
+// Reynolds flocking (separation / alignment / cohesion). Each boid is a single
+// ASCII head (> < ^ v) in its own grid cell. Every boid also splats into
 // a density field on the character grid: lone boids leave a faint halo, tight
 // flocks build up dense ASCII clusters (RAMP) and a blurred glow underneath.
 // Colour follows heading, blended across --sim-a/b/c. Text blocks on the page are
@@ -10,11 +10,11 @@
     // --- look ---
     const FONT_PX = 17;
     const LINE_PX = 20;
-    const ARROW = "-=>";                 // the boid sprite, drawn rotated to its heading
+    const HEADS = { e: ">", w: "<", n: "^", s: "v" };   // boid glyph by dominant direction
     const RAMP = " .:-=+*#%@";           // cluster density, light -> heavy
     const SPLAT_R = 70;                  // css px each boid contributes density within
     const FIELD_LO = 0.35, FIELD_HI = 5; // density where glyphs start / reach the heaviest
-    const GLOW_LO = 0.6, GLOW_HI = 4;    // density where the glow starts / saturates
+    const GLOW_LO = 1.2, GLOW_HI = 7;    // density where the glow starts / saturates (clusters only)
     const PALETTE_STEPS = 24;            // colour gradient resolution around the compass
 
     // --- flock ---
@@ -213,6 +213,17 @@
             buildField();
             ctx.clearRect(0, 0, vw, vh);
 
+            // boids claim their grid cell; the cluster glyph there is replaced, not overdrawn
+            const heads = new Map();
+            for (const b of boids) {
+                const x = Math.floor(b.x / cw), y = Math.floor(b.y / LINE_PX);
+                if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
+                const i = y * cols + x;
+                if (hidden[i] || heads.has(i)) continue;
+                const ch = Math.abs(b.vx) >= Math.abs(b.vy) ? (b.vx > 0 ? HEADS.e : HEADS.w) : (b.vy > 0 ? HEADS.s : HEADS.n);
+                heads.set(i, [ch, palette[headingIndex(b)]]);
+            }
+
             // glow layer + cluster glyphs (bucketed by quantised colour + level)
             const g = glowImg.data;
             const buckets = new Map();
@@ -223,6 +234,7 @@
                 g[i * 4] = r; g[i * 4 + 1] = gg; g[i * 4 + 2] = b;
                 g[i * 4 + 3] = 255 * smooth(GLOW_LO, GLOW_HI, f);
 
+                if (heads.has(i)) continue;
                 const lvl = Math.round(smooth(FIELD_LO, FIELD_HI, f) * (RAMP.length - 1));
                 if (lvl <= 0) continue;
                 const q = v => Math.min(255, Math.round(v / 16) * 16);
@@ -241,23 +253,12 @@
                 for (const i of list) ctx.fillText(ch, (i % cols) * cw, Math.floor(i / cols) * LINE_PX);
             }
 
-            // arrows on top, rotated about their centre
-            ctx.globalAlpha = 0.95;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            for (const b of boids) {
-                const cx = Math.floor(b.x / cw), cy = Math.floor(b.y / LINE_PX);
-                if (cx >= 0 && cy >= 0 && cx < cols && cy < rows && hidden[cy * cols + cx]) continue;
-                const a = Math.atan2(b.vy, b.vx), c = Math.cos(a) * dpr, s = Math.sin(a) * dpr;
-                ctx.setTransform(c, s, -s, c, b.x * dpr, b.y * dpr);
-                ctx.fillStyle = palette[headingIndex(b)];
-                // one char at a time: JetBrains Mono would otherwise ligature "=>" into "⇒"
-                for (let k = 0; k < ARROW.length; k++) ctx.fillText(ARROW[k], (k - (ARROW.length - 1) / 2) * cw, 0);
-            }
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.textAlign = "start";
-            ctx.textBaseline = "top";
+            // boid heads, in their own grid cells
             ctx.globalAlpha = 1;
+            for (const [i, [ch, col]] of heads) {
+                ctx.fillStyle = col;
+                ctx.fillText(ch, (i % cols) * cw, Math.floor(i / cols) * LINE_PX);
+            }
         }
 
         function warmUp(seconds) {

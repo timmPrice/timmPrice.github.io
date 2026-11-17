@@ -103,13 +103,13 @@ canvas.sim-glow {
 /* cluster glow: a tiny density image, upscaled and blurred.
  * screen = adds light on the dark theme, multiply = darkens like ink on newsprint */
 canvas.sim-glow {
-    filter: blur(18px);
-    opacity: 0.55;
+    filter: blur(22px);
+    opacity: 0.28;
     mix-blend-mode: screen;
 }
 
 .light canvas.sim-glow {
-    opacity: 0.35;
+    opacity: 0.18;
     mix-blend-mode: multiply;
 }
 
