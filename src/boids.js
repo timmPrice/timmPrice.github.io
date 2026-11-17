@@ -6,8 +6,8 @@
 // gradient as it turns. Everything is in css px, so it behaves the same on phones.
 (function () {
     // --- look ---
-    const FONT_PX = 14;
-    const LINE_PX = 16;
+    const FONT_PX = 17;
+    const LINE_PX = 20;
     const HEADS = "→↘↓↙←↖↑↗";            // glyph per heading octant (0 = east, clockwise)
     const TRAIL = " .·:";                // trail ramp, faint -> fresh
     const TRAIL_DECAY = 0.93;            // per frame: higher = longer trails
