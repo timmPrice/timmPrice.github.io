@@ -90,13 +90,27 @@ body.index {
 }
 
 /* animated ASCII boids background, created by src/boids.js */
-canvas.sim {
+canvas.sim,
+canvas.sim-glow {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     z-index: -1;
     pointer-events: none;
+}
+
+/* cluster glow: a tiny density image, upscaled and blurred.
+ * screen = adds light on the dark theme, multiply = darkens like ink on newsprint */
+canvas.sim-glow {
+    filter: blur(18px);
+    opacity: 0.55;
+    mix-blend-mode: screen;
+}
+
+.light canvas.sim-glow {
+    opacity: 0.35;
+    mix-blend-mode: multiply;
 }
 
 @keyframes fadeInAnimation {
