@@ -7,34 +7,56 @@
 // obstacles the flock steers around, and the cursor scatters it. Sizes are in css
 // px, so it behaves the same on phones.
 (function () {
-    // --- look ---
-    const FONT_PX = 17;
-    const LINE_PX = 20;
+    // Everything size-related scales with S = sqrt(screen area) / 1000, clamped:
+    // ~0.55 on a phone, ~1 on a laptop, ~2.7 on a 49" 5120x1440 ultrawide. Big screens get
+    // gigantic flocks instead of acres of empty space; phones get small ones with room to breathe.
+    const S_MIN = 0.55, S_MAX = 3;
+
+    // --- look (base values at S = 1) ---
+    const BASE_FONT_PX = 17;             // glyph size grows with sqrt(S), so the ASCII stays fine-grained
+    const FONT_MIN = 12, FONT_MAX = 28;
     const HEADS = { e: ">", w: "<", n: "^", s: "v" };   // boid glyph by dominant direction
     const RAMP = " .:-=+*#%@";           // cluster density, light -> heavy
-    const SPLAT_R = 105;                 // css px each boid contributes density within (blob size)
+    const BASE_SPLAT_R = 130;            // css px each boid contributes density within (blob size)
     const FIELD_LO = 0.35, FIELD_HI = 6; // density where glyphs start / reach the heaviest
     const GLOW_LO = 1.2, GLOW_HI = 7;    // density where the glow starts / saturates (clusters only)
     const PALETTE_STEPS = 24;            // colour gradient resolution around the compass
     const GLOW_BLUR = 2;                 // glow blur radius in grid cells (done on the tiny image, not with CSS)
 
-    // --- flock ---
+    // --- flock (distances / speeds are base values at S = 1) ---
     const FPS = 30;
-    const DENSITY = 1 / 11000;           // boids per css px^2
-    const MIN_BOIDS = 30, MAX_BOIDS = 140;
-    const MIN_SPEED = 40, MAX_SPEED = 85; // css px / s
-    const SEP_R = 28, ALIGN_R = 90, COH_R = 150;
+    const FLOCKS = 3;                    // start as this many separate flocks...
+    const PER_FLOCK_BASE = 12, PER_FLOCK_PER_S = 6;   // ...of 12 + 6*S boids each
+    const FLOCK_SPAWN_R = 70;            // css px spread of each starting flock
+    const BASE_SPEED = [45, 90];         // css px / s
+    const BASE_SEP_R = 24, BASE_ALIGN_R = 110, BASE_COH_R = 260;   // long cohesion: flocks find each other and merge
     const SEP_W = 1.6, ALIGN_W = 1.0, COH_W = 1.1;
-    const MAX_FORCE = 150;               // css px / s^2
-    const CENTER_W = 0.25;               // gentle pull toward the middle of the screen (0 = off)
-    const WARMUP_S = 15;                 // simulate this long before the first frame
+    const BASE_MAX_FORCE = 150;          // css px / s^2
+    const CENTER_W = 0.3;                // gentle pull toward the middle of the screen (0 = off)
+    const WARMUP_S = 4;                  // short warm-up: flocks have formed, but haven't merged yet
 
     // --- obstacles ---
     const AVOID = "nav li, main img, main h1, main h3, main .social, main p, footer p";
     const AVOID_MARGIN = 34;             // css px around text where boids get pushed
     const AVOID_W = 5;
     const HIDE_PAD = 14;                 // never draw glyphs over text (+ this padding)
-    const CURSOR_R = 110, CURSOR_W = 6;
+    const BASE_CURSOR_R = 110, CURSOR_W = 6;
+
+    // scaled values, recomputed on resize
+    let S = 1, FONT_PX = BASE_FONT_PX, LINE_PX = 20, SPLAT_R = BASE_SPLAT_R;
+    let MIN_SPEED = BASE_SPEED[0], MAX_SPEED = BASE_SPEED[1], MAX_FORCE = BASE_MAX_FORCE;
+    let SEP_R = BASE_SEP_R, ALIGN_R = BASE_ALIGN_R, COH_R = BASE_COH_R, CURSOR_R = BASE_CURSOR_R;
+
+    function applyScale(w, h) {
+        S = Math.min(S_MAX, Math.max(S_MIN, Math.sqrt(w * h) / 1000));
+        FONT_PX = Math.round(Math.min(FONT_MAX, Math.max(FONT_MIN, BASE_FONT_PX * Math.sqrt(S))));
+        LINE_PX = Math.round(FONT_PX * 1.18);
+        SPLAT_R = BASE_SPLAT_R * S;
+        MIN_SPEED = BASE_SPEED[0] * S; MAX_SPEED = BASE_SPEED[1] * S;
+        MAX_FORCE = BASE_MAX_FORCE * S;
+        SEP_R = Math.max(BASE_SEP_R * S, FONT_PX * 1.2);   // never closer than ~one glyph
+        ALIGN_R = BASE_ALIGN_R * S; COH_R = BASE_COH_R * S; CURSOR_R = BASE_CURSOR_R * S;
+    }
 
     function parseColor(str) {
         const s = str.trim();
@@ -122,18 +144,37 @@
             }
         }
 
-        function spawn(n) {
+        // FLOCKS tight groups spread around the screen, each with its own heading
+        function spawnFlocks(perFlock) {
+            boids = [];
+            const homes = [[0.15, 0.25], [0.85, 0.35], [0.5, 0.88], [0.15, 0.8], [0.85, 0.8]];
+            for (let f = 0; f < FLOCKS; f++) {
+                const [hx0, hy0] = homes[f % homes.length], heading = Math.random() * Math.PI * 2;
+                for (let i = 0; i < perFlock; i++) {
+                    const r = Math.sqrt(Math.random()) * FLOCK_SPAWN_R * S, t = Math.random() * Math.PI * 2;
+                    const a = heading + (Math.random() - 0.5) * 0.6, sp = (MIN_SPEED + MAX_SPEED) / 2;
+                    boids.push({ x: hx0 * vw + Math.cos(t) * r, y: hy0 * vh + Math.sin(t) * r, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp });
+                }
+            }
+        }
+
+        // on resize keep the flock: rescale positions/velocities, top up or trim near existing boids
+        function refit(perFlock, sx, sy, sv) {
+            for (const b of boids) { b.x *= sx; b.y *= sy; b.vx *= sv; b.vy *= sv; }
+            const n = perFlock * FLOCKS;
             while (boids.length < n) {
-                const a = Math.random() * Math.PI * 2, s = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
-                boids.push({ x: Math.random() * vw, y: Math.random() * vh, vx: Math.cos(a) * s, vy: Math.sin(a) * s });
+                const o = boids[Math.floor(Math.random() * boids.length)];
+                boids.push({ x: o.x + (Math.random() - 0.5) * 20, y: o.y + (Math.random() - 0.5) * 20, vx: o.vx, vy: o.vy });
             }
             boids.length = n;
         }
 
         function resize() {
             dpr = window.devicePixelRatio || 1;
+            const pw = vw, ph = vh, pS = S;
             vw = window.innerWidth;
             vh = window.innerHeight;
+            applyScale(vw, vh);
             // size the backing store in whole device pixels and the element to match exactly,
             // so the browser never resamples it (that rescale is what blurs on fractional DPR)
             canvas.width = Math.floor(vw * dpr);
@@ -152,7 +193,9 @@
             hx = new Float32Array(cols * rows); hy = new Float32Array(cols * rows);
             buildAtlas();
             readObstacles();
-            spawn(Math.round(Math.min(MAX_BOIDS, Math.max(MIN_BOIDS, vw * vh * DENSITY))));
+            const perFlock = Math.round(PER_FLOCK_BASE + PER_FLOCK_PER_S * S);
+            if (!boids.length) spawnFlocks(perFlock);
+            else refit(perFlock, vw / (pw || vw), vh / (ph || vh), S / (pS || S));
         }
 
         function limit(x, y, max) {
