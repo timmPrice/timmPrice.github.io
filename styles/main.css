@@ -3,7 +3,7 @@
     --main-text-color:  #E5E7EB;
     --secondary-text-color: #D1D5DB;
     --hl-color: #E9C071;
-    /* energy blob colours (src/blobs.js) */
+    /* energy blob colours (src/ascii.js) */
     --blob-a: #E9C071;
     --blob-b: #4E8A4A;
     --blob-c: #458588;
@@ -89,7 +89,7 @@ body.index {
     transition: background 0.3s, color 0.3s;
 }
 
-/* animated low-res background, created by src/blobs.js */
+/* animated ASCII blob background, created by src/ascii.js */
 canvas.blobs {
     position: fixed;
     inset: 0;
@@ -97,7 +97,6 @@ canvas.blobs {
     height: 100%;
     z-index: -1;
     pointer-events: none;
-    image-rendering: pixelated;
 }
 
 @keyframes fadeInAnimation {
